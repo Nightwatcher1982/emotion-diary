@@ -191,11 +191,19 @@ jobs:
         #!/bin/bash
         set -e
         
-        echo "📂 检查项目目录..."
+        echo "🔍 系统信息检查..."
+        echo "当前用户: $(whoami)"
+        echo "当前目录: $(pwd)"
+        echo "用户家目录: $HOME"
+        
+        PROJECT_PATH="$HOME/emotion-diary"
+        
+        echo "📂 检查项目目录: $PROJECT_PATH"
         if [ ! -d "$PROJECT_PATH" ]; then
           echo "📁 创建项目目录: $PROJECT_PATH"
-          sudo mkdir -p $PROJECT_PATH
-          sudo chown $USER:$USER $PROJECT_PATH
+          mkdir -p $PROJECT_PATH
+        else
+          echo "✅ 项目目录已存在"
         fi
         
         echo "📥 进入项目目录..."
@@ -210,6 +218,14 @@ jobs:
           git fetch origin
           git reset --hard origin/main
         fi
+        
+        echo "📊 验证部署结果..."
+        echo "项目目录内容:"
+        ls -la
+        echo "Git状态:"
+        git status --porcelain
+        echo "最新提交:"
+        git log --oneline -3
         
         echo "✅ 部署完成！"
         EOF
