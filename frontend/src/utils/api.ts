@@ -218,7 +218,7 @@ export const aiAPI = {
   },
   
   // 实时AI分析
-  realtimeAnalysis: (data: any) => request('/ai/analysis/realtime/', {
+  realtimeAnalysis: (data: any) => request('/ai/analyze/', {
     method: 'POST',
     body: JSON.stringify(data)
   })

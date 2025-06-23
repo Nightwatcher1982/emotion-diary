@@ -105,40 +105,31 @@
     "backgroundColor": "#f8f9fa"
   },
   "tabBar": {
-    "color": "#999999",
+    "color": "#7B8794",
     "selectedColor": "#4A90E2",
-    "backgroundColor": "#ffffff",
-    "borderStyle": "black",
+    "backgroundColor": "rgba(245,247,250,0.95)",
+    "borderStyle": "white",
+    "fontSize": "12px",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页",
-        "iconPath": "static/icons/home.png",
-        "selectedIconPath": "static/icons/home-active.png"
+        "text": "首页"
       },
       {
         "pagePath": "pages/statistics/index",
-        "text": "统计",
-        "iconPath": "static/icons/chart.png",
-        "selectedIconPath": "static/icons/chart-active.png"
+        "text": "统计"
       },
       {
         "pagePath": "pages/record/index",
-        "text": "记录",
-        "iconPath": "static/icons/add.png",
-        "selectedIconPath": "static/icons/add-active.png"
+        "text": "记录"
       },
       {
         "pagePath": "pages/analysis/index",
-        "text": "分析",
-        "iconPath": "static/icons/analysis.png",
-        "selectedIconPath": "static/icons/analysis-active.png"
+        "text": "分析"
       },
       {
         "pagePath": "pages/profile/index",
-        "text": "我的",
-        "iconPath": "static/icons/profile.png",
-        "selectedIconPath": "static/icons/profile-active.png"
+        "text": "我的"
       }
     ]
   }

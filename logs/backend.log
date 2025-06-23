@@ -53,3 +53,431 @@ Performing system checks...
 
 System check identified no issues (0 silenced).
 INFO Watching for file changes with StatReloader
+INFO "OPTIONS /api/v1/auth/sms/send/ HTTP/1.1" 200 0
+INFO [模拟短信] 手机号: 13800138000, 验证码: 400547, 用途: login
+INFO 验证码发送成功: 13800138000 - 400547 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO [模拟短信] 手机号: 13800138000, 验证码: 316860, 用途: login
+INFO 验证码发送成功: 13800138000 - 316860 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "OPTIONS /api/v1/auth/phone/login/ HTTP/1.1" 200 0
+WARNING Bad Request: /api/v1/auth/phone/login/
+WARNING "POST /api/v1/auth/phone/login/ HTTP/1.1" 400 55
+WARNING Bad Request: /api/v1/auth/phone/login/
+WARNING "POST /api/v1/auth/phone/login/ HTTP/1.1" 400 55
+WARNING Bad Request: /api/v1/auth/phone/login/
+WARNING "POST /api/v1/auth/phone/login/ HTTP/1.1" 400 55
+INFO "OPTIONS /api/v1/emotions/records/today/ HTTP/1.1" 200 0
+INFO "OPTIONS /api/v1/emotions/records/recent/ HTTP/1.1" 200 0
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 2
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 2
+INFO "OPTIONS /api/v1/auth/sms/send/ HTTP/1.1" 200 0
+INFO [模拟短信] 手机号: 13800138000, 验证码: 257348, 用途: login
+INFO 验证码发送成功: 13800138000 - 257348 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "OPTIONS /api/v1/auth/phone/login/ HTTP/1.1" 200 0
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 491
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 2
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 2
+INFO [模拟短信] 手机号: 13800138000, 验证码: 269497, 用途: login
+INFO 验证码发送成功: 13800138000 - 269497 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO [模拟短信] 手机号: 14563214541, 验证码: 178320, 用途: login
+INFO 验证码发送成功: 14563214541 - 178320 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 486
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 2
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 2
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 2
+INFO /Volumes/PSSD/情绪日记/backend/ai_analysis/ai_service.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 23, 2025 - 01:21:34
+Django version 4.2.7, using settings 'emotion_diary_api.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+INFO Watching for file changes with StatReloader
+INFO /Volumes/PSSD/情绪日记/backend/ai_analysis/ai_service.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 23, 2025 - 12:22:40
+Django version 4.2.7, using settings 'emotion_diary_api.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+INFO Watching for file changes with StatReloader
+INFO /Volumes/PSSD/情绪日记/backend/ai_analysis/ai_service.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 23, 2025 - 12:22:48
+Django version 4.2.7, using settings 'emotion_diary_api.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+INFO Watching for file changes with StatReloader
+INFO "GET /health/ HTTP/1.1" 200 121
+WARNING Forbidden: /api/v1/ai/analyze/
+WARNING "POST /api/v1/ai/analyze/ HTTP/1.1" 403 43
+WARNING Forbidden: /api/v1/ai/analyze/
+WARNING "POST /api/v1/ai/analyze/ HTTP/1.1" 403 43
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 2
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 2
+WARNING Forbidden: /api/v1/ai/analyze/
+WARNING "POST /api/v1/ai/analyze/ HTTP/1.1" 403 43
+WARNING Forbidden: /api/v1/ai/analyze/
+WARNING "POST /api/v1/ai/analyze/ HTTP/1.1" 403 43
+INFO [模拟短信] 手机号: 13900139000, 验证码: 346119, 用途: login
+INFO 验证码发送成功: 13900139000 - 346119 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 488
+WARNING Bad Request: /api/v1/ai/analyze/
+WARNING "POST /api/v1/ai/analyze/ HTTP/1.1" 400 85
+INFO [模拟短信] 手机号: 13900139001, 验证码: 926786, 用途: login
+INFO 验证码发送成功: 13900139001 - 926786 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 489
+WARNING Bad Request: /api/v1/ai/analyze/
+WARNING "POST /api/v1/ai/analyze/ HTTP/1.1" 400 85
+WARNING Bad Request: /api/v1/auth/phone/login/
+WARNING "POST /api/v1/auth/phone/login/ HTTP/1.1" 400 55
+WARNING Bad Request: /api/v1/auth/phone/login/
+WARNING "POST /api/v1/auth/phone/login/ HTTP/1.1" 400 55
+INFO [模拟短信] 手机号: 13900139002, 验证码: 192624, 用途: login
+INFO 验证码发送成功: 13900139002 - 192624 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 489
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 46
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4999
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 2
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 2
+INFO [模拟短信] 手机号: 13800138000, 验证码: 119936, 用途: login
+INFO 验证码发送成功: 13800138000 - 119936 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 491
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 2
+INFO "OPTIONS /api/v1/emotions/records/ HTTP/1.1" 200 0
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 459
+INFO "GET /health/ HTTP/1.1" 200 121
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 461
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 461
+INFO [模拟短信] 手机号: 13900139003, 验证码: 693573, 用途: login
+INFO 验证码发送成功: 13900139003 - 693573 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 490
+WARNING Bad Request: /api/v1/auth/phone/login/
+WARNING "POST /api/v1/auth/phone/login/ HTTP/1.1" 400 55
+WARNING Bad Request: /api/v1/auth/phone/login/
+WARNING "POST /api/v1/auth/phone/login/ HTTP/1.1" 400 55
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 461
+INFO "OPTIONS /api/v1/ai/analyze/ HTTP/1.1" 200 0
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 47
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4904
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 461
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 461
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 461
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 47
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4904
+INFO "GET /health/ HTTP/1.1" 200 121
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 461
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 47
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4904
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 461
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 461
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 461
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 47
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4904
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 461
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 461
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 461
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+WARNING Not Found: /
+WARNING "GET / HTTP/1.1" 404 3276
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "OPTIONS /api/v1/auth/sms/send/ HTTP/1.1" 200 0
+INFO [模拟短信] 手机号: 13800138000, 验证码: 101209, 用途: login
+INFO 验证码发送成功: 13800138000 - 101209 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "OPTIONS /api/v1/auth/phone/login/ HTTP/1.1" 200 0
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 491
+INFO "OPTIONS /api/v1/emotions/records/today/ HTTP/1.1" 200 0
+INFO "OPTIONS /api/v1/emotions/records/recent/ HTTP/1.1" 200 0
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+WARNING Not Found: /
+WARNING "GET / HTTP/1.1" 404 3276
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "OPTIONS /api/v1/ai/analyze/ HTTP/1.1" 200 0
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "OPTIONS /api/v1/auth/sms/send/ HTTP/1.1" 200 0
+INFO [模拟短信] 手机号: 13800138000, 验证码: 940377, 用途: login
+INFO 验证码发送成功: 13800138000 - 940377 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "OPTIONS /api/v1/auth/phone/login/ HTTP/1.1" 200 0
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 491
+INFO "OPTIONS /api/v1/emotions/records/recent/ HTTP/1.1" 200 0
+INFO "OPTIONS /api/v1/emotions/records/today/ HTTP/1.1" 200 0
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+WARNING Not Found: /
+WARNING "GET / HTTP/1.1" 404 3276
+WARNING Not Found: /
+WARNING "GET / HTTP/1.1" 404 3276
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "OPTIONS /api/v1/ai/analyze/ HTTP/1.1" 200 0
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO [模拟短信] 手机号: 13800138000, 验证码: 718195, 用途: login
+INFO 验证码发送成功: 13800138000 - 718195 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 491
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "OPTIONS /api/v1/auth/sms/send/ HTTP/1.1" 200 0
+INFO [模拟短信] 手机号: 13800138000, 验证码: 167531, 用途: login
+INFO 验证码发送成功: 13800138000 - 167531 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "OPTIONS /api/v1/auth/phone/login/ HTTP/1.1" 200 0
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 491
+INFO "OPTIONS /api/v1/emotions/records/today/ HTTP/1.1" 200 0
+INFO "OPTIONS /api/v1/emotions/records/recent/ HTTP/1.1" 200 0
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "OPTIONS /api/v1/ai/analyze/ HTTP/1.1" 200 0
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+WARNING Not Found: /
+WARNING "GET / HTTP/1.1" 404 3276
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO AI分析服务初始化成功 (测试模式 - 不调用真实API)
+INFO 使用模拟AI分析 - 测试模式
+INFO AI增强分析完成（测试模式），记录ID: 48
+INFO "POST /api/v1/ai/analyze/ HTTP/1.1" 200 4992
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 923
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 923
+INFO "OPTIONS /api/v1/emotions/records/ HTTP/1.1" 200 0
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 1390
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 1390
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 1857
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 1857
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 2324
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 2324
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 2791
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 2791
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 3258
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 3258
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 3725
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 3725
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4192
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 4192
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 4659
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4659
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 5126
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4666
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 5593
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4671
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 6060
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4671
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4671
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 6527
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4671
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 6994
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4671
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 7461
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 7928
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4671
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4671
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 8395
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4671
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 8862
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4671
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 9329
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 466
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 9796
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4671
+INFO "POST /api/v1/emotions/records/ HTTP/1.1" 201 468
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 10265
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4673
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4673
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 10265
+INFO "OPTIONS /api/v1/ai/analysis/history/?page=1&page_size=10 HTTP/1.1" 200 0
+WARNING Not Found: /api/v1/ai/analysis/history/
+WARNING "GET /api/v1/ai/analysis/history/?page=1&page_size=10 HTTP/1.1" 404 9488
+WARNING Not Found: /api/v1/ai/analysis/history/
+WARNING "GET /api/v1/ai/analysis/history/?page=1&page_size=10 HTTP/1.1" 404 9488
+INFO "OPTIONS /api/v1/ai/analysis/history/?page=2&page_size=10 HTTP/1.1" 200 0
+WARNING Not Found: /api/v1/ai/analysis/history/
+WARNING "GET /api/v1/ai/analysis/history/?page=2&page_size=10 HTTP/1.1" 404 9488
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4673
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 10265

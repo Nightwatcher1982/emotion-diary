@@ -519,11 +519,45 @@ onMounted(() => {
 
 <style scoped>
 /* 页面特定变量（继承全局变量） */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --shadow-light: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
+  --shadow-medium: 0 12rpx 48rpx rgba(0, 0, 0, 0.18);
+  --shadow-heavy: 0 16rpx 64rpx rgba(0, 0, 0, 0.24);
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --success-gradient: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  --warning-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  --error-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --text-placeholder: #a0aec0;
+  --primary-color: #667eea;
+  --success-color: #48bb78;
+  --warning-color: #ed8936;
+  --error-color: #f56565;
+}
 
 .container {
-  min-height: 100vh;
+  padding: 0;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 0 30rpx 120rpx;
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 120rpx;
+}
+
+.container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* 页面标题区域 */
@@ -531,7 +565,9 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 60rpx 0 40rpx;
+  padding: 60rpx 30rpx 40rpx;
+  position: relative;
+  z-index: 1;
 }
 
 .header-content {
@@ -557,8 +593,9 @@ onMounted(() => {
 
 .stats-badge {
   background: var(--glass-bg);
-  backdrop-filter: blur(20rpx);
-  border: 2rpx solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
   border-radius: 25rpx;
   padding: 20rpx 30rpx;
   text-align: center;
@@ -582,12 +619,15 @@ onMounted(() => {
 .time-selector {
   display: flex;
   background: var(--glass-bg);
-  backdrop-filter: blur(20rpx);
-  border: 2rpx solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
   border-radius: 25rpx;
   padding: 8rpx;
-  margin-bottom: 40rpx;
+  margin: 0 20rpx 30rpx;
   box-shadow: var(--shadow-light);
+  position: relative;
+  z-index: 1;
 }
 
 .time-option {
@@ -628,13 +668,16 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 25rpx;
-  margin-bottom: 40rpx;
+  margin: 0 20rpx 30rpx;
+  position: relative;
+  z-index: 1;
 }
 
 .overview-item {
   background: var(--glass-bg);
-  backdrop-filter: blur(20rpx);
-  border: 2rpx solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
   border-radius: 25rpx;
   padding: 35rpx 25rpx;
   display: flex;
@@ -649,6 +692,17 @@ onMounted(() => {
 .overview-item:hover {
   transform: translateY(-4rpx);
   box-shadow: var(--shadow-medium);
+}
+
+.overview-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
 }
 
 .item-icon {
@@ -704,13 +758,32 @@ onMounted(() => {
 .emotion-wordcloud,
 .achievements {
   background: var(--glass-bg);
-  backdrop-filter: blur(20rpx);
-  border: 2rpx solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
   border-radius: 25rpx;
   padding: 40rpx;
-  margin-bottom: 40rpx;
+  margin: 0 20rpx 30rpx;
   box-shadow: var(--shadow-light);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+}
+
+.chart-section::before,
+.emotion-distribution::before,
+.scene-analysis::before,
+.time-pattern::before,
+.emotion-wordcloud::before,
+.achievements::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
 }
 
 .chart-section:hover,
@@ -719,7 +792,7 @@ onMounted(() => {
 .time-pattern:hover,
 .emotion-wordcloud:hover,
 .achievements:hover {
-  transform: translateY(-2rpx);
+  transform: translateY(-4rpx);
   box-shadow: var(--shadow-medium);
 }
 

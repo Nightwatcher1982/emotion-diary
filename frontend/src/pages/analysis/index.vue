@@ -1,1737 +1,995 @@
 <template>
   <view class="container">
+    <!-- 装饰性背景 -->
+    <view class="bg-decoration"></view>
+
+    <!-- 调试面板 -->
+    <view v-if="showDebug" class="debug-panel">
+      <text class="debug-title">🔧 调试信息</text>
+      <text class="debug-item">加载状态: {{ isLoading ? '加载中' : '已完成' }}</text>
+      <text class="debug-item">数据状态: {{ hasAnalysisData ? '有数据' : '无数据' }}</text>
+      <text class="debug-item">错误信息: {{ error || '无' }}</text>
+      <text class="debug-item">最后更新: {{ lastUpdate }}</text>
+    </view>
+
+    <!-- 浮动操作按钮 -->
+    <view class="floating-actions">
+      <button @click="toggleDebug" class="floating-btn">🔧</button>
+    </view>
+
     <!-- 页面头部 -->
-    <view class="page-header" v-if="!isLoading">
-      <view class="header-left">
-        <text class="page-title">AI分析报告</text>
-        <view class="analysis-status-section">
-          <text class="analysis-status">✨ 智能分析完成</text>
-          <view class="ai-status-badge" :class="{ 'ai-powered': analysisData?.ai_powered }">
-            <text class="status-icon">{{ getAIStatusIcon(analysisData) }}</text>
-            <text class="status-text">{{ getAIStatusText(analysisData) }}</text>
+    <view class="page-header glass-card">
+      <view class="header-content">
+        <text class="page-title">AI情绪分析</text>
+        <view class="status-info">
+          <view class="status-badge">
+            <text class="status-text">✅ AI测试模式</text>
           </view>
+          <text class="time-text">{{ getCurrentTime() }}</text>
         </view>
-      </view>
-      <view class="header-actions">
-        <button class="header-btn" @click="saveAnalysis">
-          <text class="btn-icon">💾</text>
-          <text class="btn-text">保存</text>
-        </button>
-        <button class="header-btn" @click="reanalyze">
-          <text class="btn-icon">🔄</text>
-          <text class="btn-text">重新分析</text>
-        </button>
+        <view class="action-buttons">
+          <button @click="saveReport" class="primary-btn">
+            <text class="btn-icon">💾</text>
+            <text class="btn-text">保存报告</text>
+          </button>
+          <button @click="refreshAnalysis" class="secondary-btn">
+            <text class="btn-icon">🔄</text>
+            <text class="btn-text">重新分析</text>
+          </button>
+        </view>
       </view>
     </view>
 
     <!-- 加载状态 -->
-    <view class="loading-section" v-if="isLoading">
-      <view class="loading-animation">
-        <view class="loading-dots">
-          <view class="dot"></view>
-          <view class="dot"></view>
-          <view class="dot"></view>
-        </view>
-        <text class="loading-text">AI正在分析中...</text>
+    <view v-if="isLoading" class="loading-container glass-card">
+      <view class="loading-animation"></view>
+      <text class="loading-title">🧠 AI正在分析中...</text>
+      <text class="loading-subtitle">请稍候，正在生成您的情绪洞察</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view v-else-if="!hasAnalysisData" class="empty-state glass-card">
+      <text class="empty-icon">🤔</text>
+      <text class="empty-title">暂无分析数据</text>
+      <text class="empty-subtitle">记录您的情绪，让AI为您提供专业的心理分析和个性化建议</text>
+      <view class="empty-actions">
+        <button @click="showExampleData" class="primary-btn">
+          <text class="btn-icon">✨</text>
+          <text class="btn-text">查看示例数据</text>
+        </button>
+        <button @click="goToRecord" class="secondary-btn">
+          <text class="btn-icon">📝</text>
+          <text class="btn-text">去记录情绪</text>
+        </button>
       </view>
     </view>
 
-    <!-- 分析结果 -->
-    <view class="analysis-content" v-else>
+    <!-- 分析报告内容 -->
+    <view v-else class="analysis-report">
+      
       <!-- 情绪概览卡片 -->
-      <view class="emotion-overview">
+      <view class="emotion-summary-card glass-card">
         <view class="card-header">
-          <text class="card-title">情绪分析</text>
-          <text class="analysis-time">{{ formatTime(analysisData.timestamp) }}</text>
+          <view class="card-title-section">
+            <text class="card-title">🎯 核心洞察</text>
+            <view class="emotion-pulse"></view>
+          </view>
+          <text class="view-more" @click="toggleCoreInsights">
+            <text>{{ showCoreInsights ? '收起详情' : '查看详情' }}</text>
+            <text class="arrow-icon" :class="{ 'rotated': showCoreInsights }">→</text>
+          </text>
         </view>
+        <text class="card-subtitle">主要情绪状态分析</text>
         
-        <view class="primary-emotion">
-          <text class="emotion-icon">{{ analysisData.primaryEmotion.icon }}</text>
+        <view class="emotion-display">
+          <view class="emotion-visual">
+            <view class="emotion-icon-container">
+              <view class="emotion-glow"></view>
+              <text class="emotion-icon">{{ analysisData.primaryEmotion.icon }}</text>
+            </view>
+            <view class="emotion-spectrum">
+              <view class="spectrum-bar">
+                <view class="spectrum-fill" :style="{ width: analysisData.primaryEmotion.confidence + '%' }"></view>
+              </view>
+              <text class="intensity-text">{{ analysisData.primaryEmotion.confidence }}%</text>
+            </view>
+          </view>
           <view class="emotion-details">
             <text class="emotion-name">{{ analysisData.primaryEmotion.name }}</text>
-            <text class="emotion-confidence">置信度: {{ analysisData.primaryEmotion.confidence }}%</text>
-          </view>
-        </view>
-
-        <view class="emotion-spectrum" v-if="analysisData.emotionSpectrum">
-          <text class="spectrum-title">情绪光谱</text>
-          <view class="spectrum-bars">
-            <view 
-              class="spectrum-item" 
-              v-for="emotion in analysisData.emotionSpectrum" 
-              :key="emotion.name"
-            >
-              <text class="spectrum-name">{{ emotion.name }}</text>
-              <view class="spectrum-bar">
-                <view 
-                  class="spectrum-fill" 
-                  :style="{ width: emotion.percentage + '%' }"
-                ></view>
+            <view class="emotion-meta">
+              <view class="meta-item">
+                <text class="meta-icon">📊</text>
+                <text class="meta-text">置信度 {{ analysisData.primaryEmotion.confidence }}%</text>
               </view>
-              <text class="spectrum-value">{{ emotion.percentage }}%</text>
+              <view class="meta-item">
+                <text class="meta-icon">⏰</text>
+                <text class="meta-text">{{ getCurrentTime() }}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 核心洞察详情展开 -->
+        <view v-if="showCoreInsights" class="core-insights-detail">
+          <view class="insights-section">
+            <text class="insights-title">🧠 AI深度分析</text>
+            <view class="insights-content">
+              <view class="insight-item" v-for="(insight, index) in analysisData.coreInsights" :key="index">
+                <view class="insight-header">
+                  <text class="insight-icon">{{ insight.icon }}</text>
+                  <text class="insight-category">{{ insight.category }}</text>
+                  <view class="insight-confidence">
+                    <text class="confidence-text">{{ insight.confidence }}%</text>
+                  </view>
+                </view>
+                <text class="insight-description">{{ insight.description }}</text>
+                <view class="insight-tags">
+                  <text v-for="tag in insight.tags" :key="tag" class="insight-tag">{{ tag }}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <view class="emotion-triggers-section">
+            <text class="section-title">🎯 情绪触发因素</text>
+            <view class="triggers-list">
+              <view class="trigger-item" v-for="(trigger, index) in analysisData.emotionTriggers" :key="index">
+                <view class="trigger-icon-container">
+                  <text class="trigger-icon">{{ trigger.icon }}</text>
+                </view>
+                <view class="trigger-content">
+                  <text class="trigger-name">{{ trigger.name }}</text>
+                  <text class="trigger-description">{{ trigger.description }}</text>
+                  <view class="trigger-intensity">
+                    <view class="intensity-bar">
+                      <view class="intensity-fill" :style="{ width: trigger.intensity + '%' }"></view>
+                    </view>
+                    <text class="intensity-label">影响强度 {{ trigger.intensity }}%</text>
+                  </view>
+                </view>
+              </view>
             </view>
           </view>
         </view>
       </view>
 
-      <!-- AI洞察 -->
-      <view class="ai-insights">
+      <!-- 情绪光谱卡片 -->
+      <view v-if="analysisData.emotionSpectrum" class="emotion-spectrum-card glass-card">
         <view class="card-header">
-          <text class="card-title">AI洞察</text>
-          <text class="ai-badge">✨ AI分析</text>
+          <view class="card-title-section">
+            <text class="card-title">📊 情绪光谱分析</text>
+          </view>
+          <text class="view-more" @click="toggleSpectrumDetail">
+            <text>{{ showSpectrumDetail ? '收起详情' : '展开详情' }}</text>
+            <text class="arrow-icon" :class="{ 'rotated': showSpectrumDetail }">→</text>
+          </text>
         </view>
         
-        <view class="insight-item" v-for="insight in analysisData.insights" :key="insight.type">
-          <view class="insight-header">
-            <text class="insight-icon">{{ insight.icon }}</text>
-            <text class="insight-title">{{ insight.title }}</text>
-            <button class="insight-share-btn" @click="shareInsight(insight)">
-              <text class="share-icon">📋</text>
-            </button>
-          </view>
-          <text class="insight-content">{{ insight.content }}</text>
-          <view class="insight-actions" v-if="insight.actionable">
-            <button class="insight-action-btn" @click="applyInsight(insight)">
-              应用建议
-            </button>
-          </view>
-        </view>
-      </view>
-
-      <!-- 个性化建议 -->
-      <view class="suggestions">
-        <view class="card-header">
-          <text class="card-title">个性化建议</text>
-        </view>
-        
-        <view class="suggestion-tabs">
+        <view class="spectrum-list">
           <view 
-            class="tab-item" 
-            v-for="(tab, index) in suggestionTabs" 
-            :key="tab.type"
-            :class="{ active: activeTab === index }"
-            @click="switchTab(index)"
+            v-for="(emotion, index) in analysisData.emotionSpectrum" 
+            :key="emotion.name"
+            class="spectrum-item"
+            @click="selectEmotion(emotion, index)"
+            :class="{ 'selected': selectedEmotionIndex === index }"
           >
-            <text class="tab-icon">{{ tab.icon }}</text>
-            <text class="tab-text">{{ tab.title }}</text>
-          </view>
-        </view>
-
-        <view class="suggestion-content">
-          <view 
-            class="suggestion-item" 
-            v-for="suggestion in currentSuggestions" 
-            :key="suggestion.id"
-          >
-            <view class="suggestion-header">
-              <text class="suggestion-title">{{ suggestion.title }}</text>
-              <text class="difficulty-tag" :class="suggestion.difficulty">
-                {{ getDifficultyLabel(suggestion.difficulty) }}
-              </text>
+            <view class="spectrum-header">
+              <view class="spectrum-name-section">
+                <text class="spectrum-icon">{{ emotion.icon }}</text>
+                <text class="spectrum-name">{{ emotion.name }}</text>
+              </view>
+              <text class="spectrum-percentage">{{ emotion.percentage }}%</text>
             </view>
-            <text class="suggestion-desc">{{ suggestion.description }}</text>
-            <view class="suggestion-actions">
-              <button 
-                class="action-btn primary" 
-                @click="applySuggestion(suggestion)"
-              >
-                试试看
-              </button>
-              <button 
-                class="action-btn secondary" 
-                @click="saveSuggestion(suggestion)"
-              >
-                收藏
-              </button>
-              <button 
-                class="action-btn tertiary" 
-                @click="viewDetailedSuggestion(suggestion)"
-              >
-                详情
-              </button>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 情绪趋势 -->
-      <view class="emotion-trend" v-if="analysisData.trend">
-        <view class="card-header">
-          <text class="card-title">情绪趋势</text>
-          <text class="trend-period">近7天</text>
-        </view>
-        
-        <view class="trend-chart">
-          <canvas 
-            canvas-id="trendChart" 
-            class="chart-canvas"
-            @touchstart="onChartTouch"
-          ></canvas>
-        </view>
-        
-        <view class="trend-summary">
-          <view class="trend-item">
-            <text class="trend-label">平均情绪</text>
-            <text class="trend-value">{{ analysisData.trend.average }}/10</text>
-          </view>
-          <view class="trend-item">
-            <text class="trend-label">波动程度</text>
-            <text class="trend-value">{{ analysisData.trend.volatility }}</text>
-          </view>
-          <view class="trend-item">
-            <text class="trend-label">改善趋势</text>
-            <text class="trend-value" :class="getTrendClass(analysisData.trend.direction)">
-              {{ getTrendDirection(analysisData.trend.direction) }}
-            </text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 深度分析结果 -->
-      <view class="deep-analysis" v-if="analysisData.deepAnalysis">
-        <view class="card-header">
-          <text class="card-title">深度分析</text>
-          <text class="analysis-score">分析得分: {{ analysisData.deepAnalysis.score }}/100</text>
-        </view>
-        
-        <view class="analysis-dimensions">
-          <view 
-            class="dimension-item" 
-            v-for="dimension in analysisData.deepAnalysis.dimensions" 
-            :key="dimension.name"
-          >
-            <view class="dimension-header">
-              <text class="dimension-name">{{ dimension.name }}</text>
-              <text class="dimension-score">{{ dimension.score }}/10</text>
-            </view>
-            <view class="dimension-bar">
+            <view class="spectrum-bar-container">
               <view 
-                class="dimension-fill" 
-                :style="{ width: (dimension.score / 10 * 100) + '%' }"
+                class="spectrum-bar-fill" 
+                :class="'spectrum-color-' + index"
+                :style="{ width: emotion.percentage + '%' }"
               ></view>
             </view>
-            <text class="dimension-desc">{{ dimension.description }}</text>
+            
+            <!-- 选中情绪的详细信息 -->
+            <view v-if="selectedEmotionIndex === index && showSpectrumDetail" class="emotion-detail-info">
+              <view class="detail-metrics">
+                <view class="metric-item">
+                  <text class="metric-label">强度等级</text>
+                  <view class="metric-value-container">
+                    <view class="metric-stars">
+                      <text v-for="star in 5" :key="star" 
+                            class="star" 
+                            :class="{ 'filled': star <= emotion.intensity }">★</text>
+                    </view>
+                    <text class="metric-text">{{ emotion.intensityLabel }}</text>
+                  </view>
+                </view>
+                <view class="metric-item">
+                  <text class="metric-label">持续时间</text>
+                  <text class="metric-value">{{ emotion.duration }}</text>
+                </view>
+                <view class="metric-item">
+                  <text class="metric-label">影响范围</text>
+                  <text class="metric-value">{{ emotion.impact }}</text>
+                </view>
+              </view>
+              
+              <view class="emotion-characteristics">
+                <text class="characteristics-title">特征描述</text>
+                <text class="characteristics-text">{{ emotion.characteristics }}</text>
+              </view>
+              
+              <view class="related-emotions">
+                <text class="related-title">相关情绪</text>
+                <view class="related-tags">
+                  <text v-for="related in emotion.relatedEmotions" :key="related" class="related-tag">{{ related }}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 情绪光谱总览图表 -->
+        <view v-if="showSpectrumDetail" class="spectrum-chart-section">
+          <text class="chart-title">📈 情绪分布图表</text>
+          <view class="emotion-radar-chart">
+            <view class="radar-container">
+              <view class="radar-grid">
+                <view class="grid-circle" v-for="circle in 4" :key="circle" :style="{ width: circle * 25 + '%', height: circle * 25 + '%' }"></view>
+                <view class="grid-line" v-for="line in 8" :key="line" :style="{ transform: 'rotate(' + (line * 45) + 'deg)' }"></view>
+              </view>
+              <view class="radar-data">
+                <view 
+                  v-for="(emotion, index) in analysisData.emotionSpectrum" 
+                  :key="emotion.name"
+                  class="radar-point"
+                  :style="getRadarPointStyle(emotion, index)"
+                >
+                  <view class="point-dot" :class="'color-' + index"></view>
+                  <text class="point-label">{{ emotion.name }}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+          
+          <view class="chart-legend">
+            <view v-for="(emotion, index) in analysisData.emotionSpectrum" :key="emotion.name" class="legend-item">
+              <view class="legend-color" :class="'spectrum-color-' + index"></view>
+              <text class="legend-text">{{ emotion.name }} ({{ emotion.percentage }}%)</text>
+            </view>
           </view>
         </view>
       </view>
 
-      <!-- 行动计划 -->
-      <view class="action-plan">
+      <!-- AI建议卡片 -->
+      <view class="ai-suggestions-card glass-card">
         <view class="card-header">
-          <text class="card-title">行动计划</text>
-          <text class="plan-duration">7天计划</text>
+          <view class="card-title-section">
+            <text class="card-title">💡 AI个性化建议</text>
+          </view>
         </view>
         
-        <view class="plan-timeline">
-          <view 
-            class="timeline-item" 
-            v-for="(day, index) in analysisData.actionPlan" 
-            :key="index"
-          >
-            <view class="timeline-dot" :class="{ completed: day.completed }"></view>
-            <view class="timeline-content">
-              <text class="timeline-date">第{{ index + 1 }}天</text>
-              <text class="timeline-title">{{ day.title }}</text>
-              <text class="timeline-desc">{{ day.description }}</text>
-              <view class="timeline-actions" v-if="!day.completed">
-                <button class="complete-btn" @click="completeTask(index)">
-                  完成
-                </button>
+        <view class="suggestions-content">
+          <view class="suggestion-category" v-for="(category, categoryIndex) in analysisData.suggestions" :key="categoryIndex">
+            <view class="category-header">
+              <text class="category-icon">{{ category.icon }}</text>
+              <text class="category-title">{{ category.title }}</text>
+              <view class="category-priority" :class="'priority-' + category.priority">
+                <text class="priority-text">{{ category.priorityLabel }}</text>
+              </view>
+            </view>
+            
+            <view class="category-suggestions">
+              <view class="suggestion-item" v-for="(suggestion, index) in category.items" :key="index">
+                <view class="suggestion-content">
+                  <text class="suggestion-title">{{ suggestion.title }}</text>
+                  <text class="suggestion-description">{{ suggestion.description }}</text>
+                  <view class="suggestion-benefits">
+                    <text class="benefits-title">预期效果：</text>
+                    <text class="benefits-text">{{ suggestion.benefits }}</text>
+                  </view>
+                </view>
+                <view class="suggestion-action">
+                  <button class="action-btn" @click="applySuggestion(suggestion)">
+                    <text class="action-text">尝试</text>
+                  </button>
+                </view>
               </view>
             </view>
           </view>
         </view>
       </view>
-    </view>
 
-    <!-- 底部操作 -->
-    <view class="bottom-actions" v-if="!isLoading">
-      <button class="action-button secondary" @click="shareAnalysis">
-        分享分析
-      </button>
-      <button class="action-button primary" @click="newRecord">
-        新的记录
-      </button>
     </view>
   </view>
 </template>
 
-<script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { aiAPI, emotionAPI, getToken, getUser } from '../../utils/api'
-
-// 类型定义
-interface EmotionSpectrum {
-  name: string
-  percentage: number
-}
-
-interface Insight {
-  type: string
-  icon: string
-  title: string
-  content: string
-  actionable?: boolean
-}
-
-interface Suggestion {
-  id: number
-  title: string
-  description: string
-  difficulty: 'easy' | 'medium' | 'hard'
-}
-
-interface ActionPlanItem {
-  title: string
-  description: string
-  completed: boolean
-}
-
-interface AnalysisData {
-  timestamp?: number
-  primaryEmotion?: {
-    name: string
-    icon: string
-    confidence: number
-  }
-  emotionSpectrum?: EmotionSpectrum[]
-  insights?: Insight[]
-  suggestions?: {
-    immediate?: Suggestion[]
-    longterm?: Suggestion[]
-    lifestyle?: Suggestion[]
-    social?: Suggestion[]
-  }
-  trend?: {
-    average: number
-    volatility: string
-    direction: string
-  }
-  deepAnalysis?: {
-    score: number
-    dimensions: Array<{
-      name: string
-      score: number
-      description: string
-    }>
-  }
-  actionPlan?: ActionPlanItem[]
-  ai_powered?: boolean
-}
-
-// 响应式数据
-const isLoading = ref(true)
-const activeTab = ref(0)
-const analysisData = ref<AnalysisData>({})
-
-// 建议标签页
-const suggestionTabs = ref([
-  { type: 'immediate', title: '即时缓解', icon: '⚡' },
-  { type: 'longterm', title: '长期改善', icon: '🎯' },
-  { type: 'lifestyle', title: '生活方式', icon: '🌱' },
-  { type: 'social', title: '社交支持', icon: '👥' }
-])
-
-// 计算当前建议
-const currentSuggestions = computed(() => {
-  if (!analysisData.value.suggestions) return []
-  const currentType = suggestionTabs.value[activeTab.value].type as keyof typeof analysisData.value.suggestions
-  return analysisData.value.suggestions[currentType] || []
-})
-
-// 方法
-const formatTime = (timestamp: string | number) => {
-  if (!timestamp) return ''
-  const date = new Date(timestamp)
-  return date.toLocaleString('zh-CN', {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
-
-const switchTab = (index: number) => {
-  activeTab.value = index
-}
-
-const getDifficultyLabel = (difficulty: string) => {
-  const difficultyMap: Record<string, string> = {
-    'easy': '容易',
-    'medium': '中等',
-    'hard': '困难'
-  }
-  return difficultyMap[difficulty] || '中等'
-}
-
-const getTrendClass = (direction: string) => {
-  if (direction === '上升') return 'trend-up'
-  if (direction === '下降') return 'trend-down'
-  return 'trend-stable'
-}
-
-const getTrendDirection = (direction: string) => {
-  return direction || '稳定'
-}
-
-const getAIStatusIcon = (data: AnalysisData) => {
-  return data?.ai_powered ? '🤖' : '📊'
-}
-
-const getAIStatusText = (data: AnalysisData) => {
-  return data?.ai_powered ? 'AI驱动' : '数据分析'
-}
-
-const applySuggestion = (suggestion: Suggestion) => {
-  uni.showModal({
-    title: '应用建议',
-    content: `确定要将"${suggestion.title}"添加到今日计划吗？`,
-    success: (res) => {
-      if (res.confirm) {
+<script>
+export default {
+  data() {
+    return {
+      isLoading: false,
+      hasAnalysisData: true,
+      showDebug: false,
+      error: null,
+      lastUpdate: new Date().toLocaleString(),
+      showCoreInsights: false,
+      showSpectrumDetail: false,
+      selectedEmotionIndex: -1,
+      analysisData: {
+        primaryEmotion: {
+          name: '悲伤',
+          icon: '😢',
+          confidence: 85
+        },
+        coreInsights: [
+          {
+            icon: '🎭',
+            category: '情绪模式',
+            confidence: 92,
+            description: '您当前处于深度内省状态，这种情绪反应通常与重要生活事件或人际关系变化相关。',
+            tags: ['内省', '敏感', '深度思考']
+          },
+          {
+            icon: '🧘',
+            category: '心理状态',
+            confidence: 88,
+            description: '分析显示您具有很强的情感感知能力，但可能需要更多的自我关怀和情绪调节。',
+            tags: ['高敏感', '共情能力', '需要关怀']
+          },
+          {
+            icon: '🌱',
+            category: '成长潜力',
+            confidence: 95,
+            description: '当前的情绪体验是个人成长的重要机会，通过适当的引导可以转化为积极的力量。',
+            tags: ['成长机会', '转化潜力', '自我发现']
+          }
+        ],
+        emotionTriggers: [
+          {
+            icon: '👥',
+            name: '人际关系',
+            description: '与重要他人的互动模式影响情绪状态',
+            intensity: 78
+          },
+          {
+            icon: '💼',
+            name: '工作压力',
+            description: '职业相关的期望和挑战带来情绪波动',
+            intensity: 65
+          },
+          {
+            icon: '🏠',
+            name: '生活环境',
+            description: '周围环境的变化对情绪产生微妙影响',
+            intensity: 45
+          }
+        ],
+        emotionSpectrum: [
+          { 
+            name: '悲伤', 
+            icon: '😢',
+            percentage: 65,
+            intensity: 4,
+            intensityLabel: '中高强度',
+            duration: '2-3小时',
+            impact: '中等影响',
+            characteristics: '深层的情感体验，伴随着对过去事件的反思和对未来的不确定感。这种情绪有助于处理失落和变化。',
+            relatedEmotions: ['失落', '怀念', '反思', '孤独']
+          },
+          { 
+            name: '焦虑', 
+            icon: '😰',
+            percentage: 21,
+            intensity: 3,
+            intensityLabel: '中等强度',
+            duration: '1-2小时',
+            impact: '轻度影响',
+            characteristics: '对未来不确定性的担忧，伴随着身体紧张感。适度的焦虑有助于保持警觉和准备应对挑战。',
+            relatedEmotions: ['担忧', '紧张', '不安', '警觉']
+          },
+          { 
+            name: '平静', 
+            icon: '😌',
+            percentage: 14,
+            intensity: 2,
+            intensityLabel: '轻度',
+            duration: '30分钟-1小时',
+            impact: '积极影响',
+            characteristics: '内心的宁静状态，思维清晰，情绪稳定。这是恢复和自我调节的重要时刻。',
+            relatedEmotions: ['宁静', '放松', '清晰', '稳定']
+          }
+        ],
+        suggestions: [
+          {
+            icon: '🧘‍♀️',
+            title: '情绪调节',
+            priority: 'high',
+            priorityLabel: '高优先级',
+            items: [
+              {
+                title: '深呼吸练习',
+                description: '每天进行5-10分钟的深呼吸冥想，帮助缓解焦虑情绪',
+                benefits: '降低压力水平，提升情绪稳定性'
+              },
+              {
+                title: '情绪日记',
+                description: '记录每日情绪变化，识别触发因素和模式',
+                benefits: '增强自我觉察，改善情绪管理能力'
+              }
+            ]
+          },
+          {
+            icon: '🤝',
+            title: '社交支持',
+            priority: 'medium',
+            priorityLabel: '中优先级',
+            items: [
+              {
+                title: '寻求倾听',
+                description: '与信任的朋友或家人分享您的感受',
+                benefits: '获得情感支持，减少孤独感'
+              },
+              {
+                title: '参与社交活动',
+                description: '适度参与轻松愉快的社交互动',
+                benefits: '提升情绪，扩展支持网络'
+              }
+            ]
+          },
+          {
+            icon: '🎨',
+            title: '创意表达',
+            priority: 'low',
+            priorityLabel: '低优先级',
+            items: [
+              {
+                title: '艺术创作',
+                description: '通过绘画、写作或音乐表达内心感受',
+                benefits: '情绪释放，促进自我理解'
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  methods: {
+    toggleDebug() {
+      this.showDebug = !this.showDebug
+    },
+    getCurrentTime() {
+      return new Date().toLocaleString()
+    },
+    saveReport() {
+      console.log('保存报告')
+      uni.showToast({
+        title: '报告已保存',
+        icon: 'success'
+      })
+    },
+    refreshAnalysis() {
+      console.log('重新分析')
+      this.isLoading = true
+      setTimeout(() => {
+        this.isLoading = false
+        this.lastUpdate = new Date().toLocaleString()
         uni.showToast({
-          title: '已添加到计划',
+          title: '分析已更新',
           icon: 'success'
         })
-      }
-    }
-  })
-}
-
-const saveSuggestion = (suggestion: Suggestion) => {
-  uni.showToast({
-    title: '已收藏',
-    icon: 'success'
-  })
-}
-
-const completeTask = (index: number) => {
-  if (analysisData.value.actionPlan && analysisData.value.actionPlan[index]) {
-    analysisData.value.actionPlan[index].completed = true
-    uni.showToast({
-      title: '任务完成！',
-      icon: 'success'
-    })
-  }
-}
-
-const shareAnalysis = () => {
-  uni.share({
-    provider: 'weixin',
-    type: 0,
-    title: '我的情绪分析报告',
-    summary: '通过AI分析，我对自己的情绪有了更深的了解',
-    success: () => {
-      uni.showToast({
-        title: '分享成功',
-        icon: 'success'
-      })
-    }
-  })
-}
-
-const newRecord = () => {
-  uni.switchTab({
-    url: '/pages/record/index'
-  })
-}
-
-// 重新分析
-const reanalyze = async () => {
-  uni.showModal({
-    title: '重新分析',
-    content: '将基于最新的情绪记录重新进行AI分析，是否继续？',
-    success: async (res) => {
-      if (res.confirm) {
-        await fetchAnalysisData()
-      }
-    }
-  })
-}
-
-// 保存分析结果
-const saveAnalysis = async () => {
-  try {
-    const analysisResult = {
-      analysis_data: analysisData.value,
-      created_at: new Date().toISOString(),
-      analysis_type: 'comprehensive'
-    }
-    
-    // 这里可以调用保存分析结果的API
-    // await aiAPI.saveAnalysis(analysisResult)
-    
-    uni.setStorageSync('latest_analysis', analysisResult)
-    
-    uni.showToast({
-      title: '分析结果已保存',
-      icon: 'success'
-    })
-  } catch (error) {
-    console.error('保存分析结果失败:', error)
-    uni.showToast({
-      title: '保存失败',
-      icon: 'none'
-    })
-  }
-}
-
-// 查看详细建议
-const viewDetailedSuggestion = (suggestion: any) => {
-  uni.showModal({
-    title: suggestion.title,
-    content: `${suggestion.description}\n\n难度：${getDifficultyLabel(suggestion.difficulty)}\n\n是否要将此建议添加到今日计划中？`,
-    confirmText: '添加',
-    cancelText: '取消',
-    success: (res) => {
-      if (res.confirm) {
-        applySuggestion(suggestion)
-      }
-    }
-  })
-}
-
-// 分享洞察
-const shareInsight = (suggestion: any) => {
-  uni.setClipboardData({
-    data: `AI洞察: ${suggestion.content}`,
-    success: () => {
-      uni.showToast({
-        title: '已复制到剪贴板',
-        icon: 'success'
-      })
-    }
-  })
-}
-
-// 应用洞察建议
-const applyInsight = (insight: any) => {
-  uni.showToast({
-    title: '已添加到行动计划',
-    icon: 'success'
-  })
-  
-  // 可以将洞察转化为具体的行动项
-  const actionItem = {
-    title: `实践：${insight.title}`,
-    description: insight.content,
-    completed: false
-  }
-  
-  if (analysisData.value.actionPlan) {
-    analysisData.value.actionPlan.push(actionItem)
-  }
-}
-
-const onChartTouch = (e: any) => {
-  // 图表交互逻辑
-  console.log('图表触摸事件', e)
-}
-
-// 模拟AI分析数据
-const mockAnalysisData = (): AnalysisData => {
-  return {
-    timestamp: Date.now(),
-    primaryEmotion: {
-      name: '焦虑',
-      icon: '😟',
-      confidence: 85
+      }, 2000)
     },
-    emotionSpectrum: [
-      { name: '焦虑', percentage: 45 },
-      { name: '担心', percentage: 30 },
-      { name: '紧张', percentage: 15 },
-      { name: '不安', percentage: 10 }
-    ],
-    insights: [
-      {
-        type: 'pattern',
-        icon: '🔍',
-        title: '情绪模式识别',
-        content: '你的焦虑情绪主要出现在工作场景中，特别是面对截止日期时。这是一种常见的适应性焦虑，说明你对工作很负责。'
-      },
-      {
-        type: 'trigger',
-        icon: '⚡',
-        title: '触发因素分析',
-        content: '分析显示，时间压力和完美主义倾向是你焦虑的主要触发因素。建议学习时间管理技巧和接受"足够好"的标准。'
-      },
-      {
-        type: 'strength',
-        icon: '💪',
-        title: '情绪优势',
-        content: '你具有很好的情绪觉察能力，能够准确识别和描述自己的感受。这是情绪管理的重要基础。'
-      }
-    ],
-    suggestions: {
-      immediate: [
-        {
-          id: 1,
-          title: '4-7-8呼吸法',
-          description: '吸气4秒，屏气7秒，呼气8秒。重复3-4次可快速缓解焦虑。',
-          difficulty: 'easy' as const
-        },
-        {
-          id: 2,
-          title: '5-4-3-2-1接地技巧',
-          description: '说出5个看到的、4个听到的、3个摸到的、2个闻到的、1个尝到的。',
-          difficulty: 'easy' as const
-        }
-      ],
-      longterm: [
-        {
-          id: 3,
-          title: '认知重构练习',
-          description: '识别并挑战消极思维模式，用更平衡的想法替代。',
-          difficulty: 'medium' as const
-        },
-        {
-          id: 4,
-          title: '正念冥想',
-          description: '每天10-15分钟的正念练习，提高情绪调节能力。',
-          difficulty: 'medium' as const
-        }
-      ],
-      lifestyle: [
-        {
-          id: 5,
-          title: '规律运动',
-          description: '每周3-4次有氧运动，每次30分钟，有助于缓解焦虑。',
-          difficulty: 'medium' as const
-        },
-        {
-          id: 6,
-          title: '睡眠优化',
-          description: '建立规律的睡眠时间，创造良好的睡眠环境。',
-          difficulty: 'hard' as const
-        }
-      ],
-      social: [
-        {
-          id: 7,
-          title: '寻求支持',
-          description: '与信任的朋友或家人分享你的感受，获得情感支持。',
-          difficulty: 'medium' as const
-        },
-        {
-          id: 8,
-          title: '专业咨询',
-          description: '如果焦虑持续影响生活，考虑寻求专业心理咨询师的帮助。',
-          difficulty: 'hard' as const
-        }
-      ]
+    showExampleData() {
+      this.hasAnalysisData = true
     },
-    trend: {
-      average: 6.5,
-      volatility: '中等',
-      direction: '稳定'
-    },
-    deepAnalysis: {
-      score: 78,
-      dimensions: [
-        { name: '情绪觉察', score: 8, description: '能够准确识别自己的情绪状态' },
-        { name: '应对策略', score: 6, description: '具备一定的情绪调节技巧，但需要加强' },
-        { name: '社会支持', score: 7, description: '拥有良好的社会支持网络' },
-        { name: '生活平衡', score: 5, description: '工作与生活平衡需要改善' }
-      ]
-    },
-    actionPlan: [
-      { title: '练习深呼吸', description: '每天早晨练习5分钟深呼吸', completed: false },
-      { title: '记录触发因素', description: '观察并记录引起焦虑的具体情况', completed: false },
-      { title: '尝试正念练习', description: '下载冥想App，尝试10分钟正念练习', completed: false },
-      { title: '制定时间计划', description: '为重要任务制定详细的时间计划', completed: false },
-      { title: '与朋友交流', description: '主动与一位朋友分享近期的感受', completed: false },
-      { title: '评估进展', description: '回顾本周的情绪变化和应对效果', completed: false },
-      { title: '调整策略', description: '根据一周的实践调整应对策略', completed: false }
-    ]
-  }
-}
-
-// 获取AI分析数据
-const fetchAnalysisData = async (recordId?: string) => {
-  try {
-    const token = getToken()
-    if (!token) {
-      uni.showToast({
-        title: '请先登录',
-        icon: 'none'
-      })
+    goToRecord() {
       uni.navigateTo({
-        url: '/pages/login/index'
+        url: '/pages/record/index'
       })
-      return
-    }
-
-    isLoading.value = true
-
-    // 获取最近的情绪记录
-    let records = []
-    if (recordId) {
-      // 如果有指定记录ID，获取特定记录
-      const recordResponse = await emotionAPI.getRecordById(recordId)
-      records = [recordResponse]
-    } else {
-      // 获取最近的记录用于分析
-      const recentResponse = await emotionAPI.getRecentRecords()
-      records = recentResponse.results || recentResponse
-    }
-
-    if (!records || records.length === 0) {
-      uni.showModal({
-        title: '暂无数据',
-        content: '还没有情绪记录，请先记录一些情绪数据',
-        success: (res) => {
-          if (res.confirm) {
-            uni.switchTab({
-              url: '/pages/record/index'
-            })
-          }
-        }
-      })
-      isLoading.value = false
-      return
-    }
-
-    // 调用AI分析API
-    const analysisRequest = {
-      emotion_records: records.map((r: any) => r.id),
-      analysis_type: 'comprehensive',
-      include_suggestions: true,
-      include_trend: true
-    }
-
-    const aiResponse = await aiAPI.requestAnalysis(analysisRequest)
-    
-    // 处理AI响应数据
-    analysisData.value = processAIResponse(aiResponse, records)
-    isLoading.value = false
-
-  } catch (error) {
-    console.error('获取分析数据失败:', error)
-    isLoading.value = false
-    
-    // 如果API失败，使用模拟数据
-    uni.showToast({
-      title: 'AI分析服务暂时不可用，显示示例数据',
-      icon: 'none',
-      duration: 3000
-    })
-    
-    setTimeout(() => {
-      analysisData.value = mockAnalysisData()
-    }, 1000)
-  }
-}
-
-// 处理AI响应数据
-const processAIResponse = (aiResponse: any, records: any[]) => {
-  const latestRecord = records[0]
-  
-  return {
-    timestamp: Date.now(),
-    recordId: latestRecord.id,
-    primaryEmotion: {
-      name: getEmotionName(latestRecord.emotion_type),
-      icon: getEmotionIcon(latestRecord.emotion_type),
-      confidence: aiResponse.confidence || 85
     },
-    emotionSpectrum: generateEmotionSpectrum(latestRecord, aiResponse),
-    insights: parseInsights(aiResponse.insights || []),
-    suggestions: parseSuggestions(aiResponse.suggestions || {}),
-    trend: parseTrend(aiResponse.trend || {}),
-    deepAnalysis: parseDeepAnalysis(aiResponse.deep_analysis || {}),
-    actionPlan: parseActionPlan(aiResponse.action_plan || [])
-  }
-}
-
-// 辅助函数：获取情绪中文名称
-const getEmotionName = (emotionType: string): string => {
-  const emotionMap: Record<string, string> = {
-    'happy': '快乐',
-    'sad': '悲伤',
-    'angry': '愤怒',
-    'anxious': '焦虑',
-    'calm': '平静',
-    'fearful': '恐惧'
-  }
-  return emotionMap[emotionType] || '未知'
-}
-
-// 辅助函数：获取情绪图标
-const getEmotionIcon = (emotionType: string): string => {
-  const iconMap: Record<string, string> = {
-    'happy': '😄',
-    'sad': '😢',
-    'angry': '😡',
-    'anxious': '😟',
-    'calm': '😌',
-    'fearful': '😨'
-  }
-  return iconMap[emotionType] || '😐'
-}
-
-// 生成情绪光谱数据
-const generateEmotionSpectrum = (record: any, aiResponse: any) => {
-  const spectrum = aiResponse.emotion_spectrum || []
-  if (spectrum.length > 0) {
-    return spectrum.map((item: any) => ({
-      name: getEmotionName(item.emotion),
-      percentage: Math.round(item.confidence * 100)
-    }))
-  }
-  
-  // 如果AI没有返回光谱数据，基于记录生成
-  const intensity = record.intensity || 5
-  const mainEmotion = getEmotionName(record.emotion_type)
-  
-  return [
-    { name: mainEmotion, percentage: intensity * 10 },
-    { name: '中性', percentage: Math.max(0, 100 - intensity * 10) }
-  ]
-}
-
-// 解析AI洞察
-const parseInsights = (insights: any[]) => {
-  if (insights.length === 0) {
-    return [
-      {
-        type: 'pattern',
-        icon: '🔍',
-        title: '情绪模式识别',
-        content: '正在分析您的情绪模式，请多记录几次以获得更准确的分析。'
+    toggleCoreInsights() {
+      this.showCoreInsights = !this.showCoreInsights
+    },
+    toggleSpectrumDetail() {
+      this.showSpectrumDetail = !this.showSpectrumDetail
+      if (!this.showSpectrumDetail) {
+        this.selectedEmotionIndex = -1
       }
-    ]
-  }
-  
-  return insights.map((insight: any) => ({
-    type: insight.type || 'general',
-    icon: getInsightIcon(insight.type),
-    title: insight.title || 'AI洞察',
-    content: insight.content || insight.description || ''
-  }))
-}
-
-// 获取洞察图标
-const getInsightIcon = (type: string): string => {
-  const iconMap: Record<string, string> = {
-    'pattern': '🔍',
-    'trigger': '⚡',
-    'strength': '💪',
-    'recommendation': '💡',
-    'trend': '📈',
-    'warning': '⚠️'
-  }
-  return iconMap[type] || '💭'
-}
-
-// 解析建议数据
-const parseSuggestions = (suggestions: any) => {
-  const defaultSuggestions = {
-    immediate: [
-      {
-        id: 1,
-        title: '深呼吸练习',
-        description: '进行3-5次深呼吸，帮助快速缓解紧张情绪。',
-        difficulty: 'easy'
+    },
+    selectEmotion(emotion, index) {
+      if (this.showSpectrumDetail) {
+        this.selectedEmotionIndex = this.selectedEmotionIndex === index ? -1 : index
       }
-    ],
-    longterm: [
-      {
-        id: 2,
-        title: '情绪日记',
-        description: '坚持记录情绪变化，提高情绪觉察能力。',
-        difficulty: 'medium'
+    },
+    getRadarPointStyle(emotion, index) {
+      const angle = (index * 360) / this.analysisData.emotionSpectrum.length
+      const radius = (emotion.percentage / 100) * 40 // 40% 是最大半径
+      const x = 50 + radius * Math.cos((angle - 90) * Math.PI / 180)
+      const y = 50 + radius * Math.sin((angle - 90) * Math.PI / 180)
+      
+      return {
+        left: x + '%',
+        top: y + '%',
+        transform: 'translate(-50%, -50%)'
       }
-    ],
-    lifestyle: [
-      {
-        id: 3,
-        title: '规律作息',
-        description: '保持规律的睡眠和饮食习惯。',
-        difficulty: 'medium'
-      }
-    ],
-    social: [
-      {
-        id: 4,
-        title: '寻求支持',
-        description: '与信任的人分享你的感受。',
-        difficulty: 'easy'
-      }
-    ]
-  }
-  
-  return {
-    immediate: suggestions.immediate || defaultSuggestions.immediate,
-    longterm: suggestions.longterm || defaultSuggestions.longterm,
-    lifestyle: suggestions.lifestyle || defaultSuggestions.lifestyle,
-    social: suggestions.social || defaultSuggestions.social
+    },
+    applySuggestion(suggestion) {
+      console.log('应用建议:', suggestion.title)
+      uni.showToast({
+        title: '已添加到计划',
+        icon: 'success'
+      })
+    }
   }
 }
-
-// 解析趋势数据
-const parseTrend = (trend: any) => {
-  return {
-    average: trend.average || 5.0,
-    volatility: trend.volatility || '中等',
-    direction: trend.direction || '稳定'
-  }
-}
-
-// 解析深度分析数据
-const parseDeepAnalysis = (deepAnalysis: any) => {
-  return {
-    score: deepAnalysis.score || 70,
-    dimensions: deepAnalysis.dimensions || [
-      { name: '情绪觉察', score: 7, description: '能够识别自己的情绪状态' },
-      { name: '应对策略', score: 6, description: '具备基本的情绪调节能力' }
-    ]
-  }
-}
-
-// 解析行动计划
-const parseActionPlan = (actionPlan: any[]) => {
-  if (actionPlan.length === 0) {
-    return [
-      { title: '记录情绪', description: '每天记录一次情绪状态', completed: false },
-      { title: '练习放松', description: '尝试深呼吸或冥想', completed: false },
-      { title: '评估进展', description: '回顾一周的情绪变化', completed: false }
-    ]
-  }
-  
-  return actionPlan.map((plan: any) => ({
-    title: plan.title || plan.name || '',
-    description: plan.description || '',
-    completed: plan.completed || false
-  }))
-}
-
-// 获取建议优先级标签
-const getPriorityLabel = (index: number) => {
-  const labels = ['高优先级', '中优先级', '低优先级']
-  return labels[index] || '建议'
-}
-
-// 生命周期
-onMounted(() => {
-  // 获取页面参数
-  const pages = getCurrentPages()
-  const currentPage = pages[pages.length - 1] as any
-  const options = currentPage.options || {}
-  
-  // 如果有recordId参数，分析特定记录
-  const recordId = options.recordId
-  
-  fetchAnalysisData(recordId)
-})
 </script>
 
 <style scoped>
-/* CSS变量定义 */
+/* CSS变量定义 - 与其他页面保持一致 */
 :root {
-  --primary-color: #667eea;
-  --secondary-color: #764ba2;
-  --success-color: #4CAF50;
-  --warning-color: #FF9800;
-  --error-color: #F44336;
-  --text-primary: #2c3e50;
-  --text-secondary: #6c757d;
-  --background-color: #f8f9fa;
-  --border-color: #e9ecef;
-  --card-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
-  --card-shadow-hover: 0 12rpx 40rpx rgba(0, 0, 0, 0.18);
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --shadow-light: 0 8rpx 32rpx rgba(31, 38, 135, 0.37);
+  --shadow-card: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
 }
 
-/* 全局容器 */
 .container {
-  padding: 20rpx;
+  padding: 0;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
-}
-
-/* 页面头部优化 */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 30rpx 25rpx;
-  margin-bottom: 30rpx;
-  background: white;
-  border-radius: 25rpx;
-  box-shadow: var(--card-shadow);
-  border: 1rpx solid rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10rpx);
-}
-
-.header-left {
-  display: flex;
-  flex-direction: column;
-}
-
-.page-title {
-  font-size: 38rpx;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 8rpx;
-}
-
-.analysis-status-section {
-  display: flex;
-  align-items: center;
-  gap: 16rpx;
-}
-
-.analysis-status {
-  font-size: 26rpx;
-  color: var(--primary-color);
-  font-weight: 500;
-}
-
-.ai-status-badge {
-  display: flex;
-  align-items: center;
-  gap: 10rpx;
-  padding: 12rpx 20rpx;
-  border-radius: 25rpx;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.3);
-  transform: translateY(0);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.ai-status-badge:hover {
-  transform: translateY(-2rpx);
-  box-shadow: 0 8rpx 25rpx rgba(102, 126, 234, 0.4);
-}
-
-.ai-status-badge .status-icon {
-  font-size: 26rpx;
-  animation: pulse 2s infinite;
-}
-
-.ai-status-badge .status-text {
-  font-size: 22rpx;
-  color: #ffffff;
-  font-weight: 600;
-}
-
-.header-actions {
-  display: flex;
-  gap: 15rpx;
-}
-
-.header-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 18rpx 25rpx;
-  background: white;
-  border: 2rpx solid var(--border-color);
-  border-radius: 20rpx;
-  min-width: 110rpx;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
-}
-
-.header-btn:hover {
-  transform: translateY(-2rpx);
-  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.15);
-  border-color: var(--primary-color);
-}
-
-.btn-icon {
-  font-size: 26rpx;
-  margin-bottom: 6rpx;
-  transition: transform 0.3s ease;
-}
-
-.header-btn:hover .btn-icon {
-  transform: scale(1.1);
-}
-
-.btn-text {
-  font-size: 22rpx;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-/* 加载动画优化 */
-.loading-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 25rpx;
-  margin: 20rpx;
-  color: white;
   position: relative;
-  overflow: hidden;
 }
 
-.loading-section::before {
+/* 背景装饰 - 与首页一致 */
+.container::before {
   content: '';
-  position: absolute;
+  position: fixed;
   top: 0;
-  left: -100%;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  animation: shimmer 2s infinite;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.loading-animation {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 1;
-}
-
-.loading-dots {
-  display: flex;
-  gap: 8rpx;
-  margin-bottom: 30rpx;
-}
-
-.dot {
-  width: 12rpx;
-  height: 12rpx;
-  background: white;
-  border-radius: 50%;
-  animation: bounce 1.4s infinite ease-in-out both;
-}
-
-.dot:nth-child(1) { animation-delay: -0.32s; }
-.dot:nth-child(2) { animation-delay: -0.16s; }
-.dot:nth-child(3) { animation-delay: 0s; }
-
-.loading-text {
-  font-size: 30rpx;
-  color: white;
-  font-weight: 500;
-  opacity: 0.95;
-  animation: fadeInOut 2s infinite;
-}
-
-/* 分析内容卡片优化 */
-.analysis-content > view {
-  background: white;
-  border-radius: 25rpx;
-  padding: 35rpx;
-  margin-bottom: 30rpx;
-  box-shadow: var(--card-shadow);
-  border: 1rpx solid rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10rpx);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.analysis-content > view::before {
-  content: '';
+.bg-decoration {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 4rpx;
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.analysis-content > view:hover {
-  transform: translateY(-4rpx);
-  box-shadow: var(--card-shadow-hover);
+/* 调试面板 */
+.debug-panel {
+  position: fixed;
+  top: 50rpx;
+  left: 20rpx;
+  right: 20rpx;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 20rpx;
+  border-radius: 16rpx;
+  z-index: 9999;
+  font-size: 24rpx;
+  max-height: 300rpx;
+  overflow-y: auto;
 }
 
-/* 卡片标题优化 */
+.debug-title {
+  font-weight: 700;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.debug-item {
+  display: block;
+  margin-bottom: 5rpx;
+}
+
+/* 浮动按钮 */
+.floating-actions {
+  position: fixed;
+  top: 120rpx;
+  right: 30rpx;
+  z-index: 1000;
+}
+
+.floating-btn {
+  width: 80rpx;
+  height: 80rpx;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2d3748;
+  font-size: 24rpx;
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s ease;
+}
+
+.floating-btn:active {
+  transform: scale(0.95);
+}
+
+/* 毛玻璃卡片样式 - 与其他页面一致 */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 25rpx;
+  box-shadow: var(--shadow-light);
+  margin: 0 20rpx 30rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
+  border-radius: 25rpx;
+}
+
+/* 页面头部 */
+.page-header {
+  margin-top: 30rpx;
+  padding: 30rpx;
+  overflow: hidden;
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+}
+
+.page-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 20rpx;
+  display: block;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.status-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25rpx;
+}
+
+.status-badge {
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 20rpx;
+  padding: 8rpx 16rpx;
+}
+
+.status-text {
+  color: #15803d;
+  font-weight: 600;
+  font-size: 22rpx;
+}
+
+.time-text {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 24rpx;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15rpx;
+}
+
+.primary-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: 25rpx;
+  padding: 15rpx 25rpx;
+  font-weight: 600;
+  font-size: 24rpx;
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s ease;
+}
+
+.primary-btn:active {
+  transform: scale(0.95);
+}
+
+.secondary-btn {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  background: var(--glass-bg);
+  color: #2d3748;
+  border: 1px solid var(--glass-border);
+  border-radius: 25rpx;
+  padding: 15rpx 25rpx;
+  font-weight: 600;
+  font-size: 24rpx;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.secondary-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-icon {
+  font-size: 20rpx;
+}
+
+.btn-text {
+  font-size: 24rpx;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400rpx;
+  padding: 40rpx;
+  text-align: center;
+}
+
+.loading-animation {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid rgba(102, 126, 234, 0.2);
+  border-top: 6rpx solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 30rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-title {
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 28rpx;
+  margin-bottom: 15rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.loading-subtitle {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 24rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400rpx;
+  padding: 40rpx;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 100rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.7;
+}
+
+.empty-title {
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 32rpx;
+  margin-bottom: 20rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.empty-subtitle {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 26rpx;
+  line-height: 1.5;
+  margin-bottom: 40rpx;
+}
+
+.empty-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  width: 100%;
+}
+
+/* 分析报告 */
+.analysis-report {
+  padding: 0 0 40rpx;
+}
+
+/* 情绪概览卡片 - 采用首页样式 */
+.emotion-summary-card {
+  padding: 30rpx;
+  overflow: hidden;
+}
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25rpx;
-  padding-bottom: 15rpx;
-  border-bottom: 2rpx solid #f8f9fa;
+  position: relative;
+  z-index: 2;
+}
+
+.card-title-section {
+  display: flex;
+  align-items: center;
 }
 
 .card-title {
   font-size: 32rpx;
   font-weight: 700;
-  color: var(--text-primary);
-  position: relative;
+  color: #2d3748;
+  margin-right: 15rpx;
 }
 
-.card-title::after {
-  content: '';
-  position: absolute;
-  bottom: -8rpx;
-  left: 0;
-  width: 40rpx;
-  height: 3rpx;
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-  border-radius: 2rpx;
+.emotion-pulse {
+  width: 12rpx;
+  height: 12rpx;
+  background: #48bb78;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
 }
 
-.analysis-time {
-  font-size: 22rpx;
-  color: var(--text-secondary);
-  background: #f8f9fa;
-  padding: 8rpx 15rpx;
-  border-radius: 15rpx;
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10rpx rgba(72, 187, 120, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(72, 187, 120, 0);
+  }
 }
 
-.ai-badge {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  padding: 8rpx 15rpx;
-  border-radius: 15rpx;
-  font-size: 20rpx;
-  font-weight: 600;
-  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
-}
-
-/* 情绪概览优化 */
-.primary-emotion {
+.view-more {
   display: flex;
   align-items: center;
+  font-size: 26rpx;
+  color: #667eea;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.view-more:active {
+  transform: scale(0.95);
+}
+
+.arrow-icon {
+  margin-left: 8rpx;
+  transition: transform 0.3s ease;
+}
+
+.view-more:active .arrow-icon {
+  transform: translateX(5rpx);
+}
+
+/* 箭头旋转动画 */
+.arrow-icon.rotated {
+  transform: rotate(90deg);
+}
+
+.card-subtitle {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 26rpx;
+  margin-bottom: 30rpx;
+  position: relative;
+  z-index: 2;
+}
+
+.emotion-display {
+  display: flex;
+  flex-direction: column;
   gap: 20rpx;
-  padding: 25rpx;
-  background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
-  border-radius: 20rpx;
-  margin-bottom: 25rpx;
-  border: 2rpx solid rgba(102, 126, 234, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.emotion-visual {
+  display: flex;
+  align-items: center;
+  gap: 25rpx;
+}
+
+.emotion-icon-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emotion-glow {
+  position: absolute;
+  width: 80rpx;
+  height: 80rpx;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: glow 3s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { transform: scale(0.8); opacity: 0.5; }
+  to { transform: scale(1.2); opacity: 0.8; }
 }
 
 .emotion-icon {
   font-size: 60rpx;
-  animation: emotionPulse 3s infinite;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 4rpx 8rpx rgba(0, 0, 0, 0.1));
 }
 
-.emotion-details {
-  flex: 1;
-}
-
-.emotion-name {
-  font-size: 38rpx;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 8rpx;
-}
-
-.emotion-confidence {
-  font-size: 26rpx;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-/* 情绪光谱优化 */
 .emotion-spectrum {
-  margin-top: 30rpx;
-}
-
-.spectrum-title {
-  font-size: 28rpx;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 25rpx;
-  display: block;
-}
-
-.spectrum-bars {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
-}
-
-.spectrum-item {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
-  padding: 15rpx;
-  background: #f8f9fa;
-  border-radius: 15rpx;
-  transition: all 0.3s ease;
-}
-
-.spectrum-item:hover {
-  background: #e9ecef;
-  transform: translateX(5rpx);
-}
-
-.spectrum-name {
-  min-width: 100rpx;
-  font-size: 26rpx;
-  color: var(--text-primary);
-  font-weight: 600;
+  gap: 10rpx;
 }
 
 .spectrum-bar {
-  flex: 1;
-  height: 24rpx;
-  background: #e9ecef;
-  border-radius: 12rpx;
+  height: 8rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10rpx;
   overflow: hidden;
   position: relative;
 }
 
 .spectrum-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-  border-radius: 12rpx;
-  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(90deg, #48bb78, #38a169, #2f855a);
+  border-radius: 10rpx;
+  transition: width 1s ease-out;
   position: relative;
-  overflow: hidden;
 }
 
 .spectrum-fill::after {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   animation: shimmer 2s infinite;
-}
-
-.spectrum-value {
-  min-width: 70rpx;
-  text-align: right;
-  font-size: 24rpx;
-  color: var(--primary-color);
-  font-weight: 600;
-}
-
-/* AI洞察优化 */
-.insight-item {
-  margin-bottom: 25rpx;
-  padding: 25rpx;
-  background: linear-gradient(135deg, #f8f9ff 0%, #fff8f0 100%);
-  border-radius: 20rpx;
-  border: 2rpx solid rgba(102, 126, 234, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.insight-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4rpx;
-  height: 100%;
-  background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
-}
-
-.insight-item:hover {
-  transform: translateY(-2rpx);
-  box-shadow: 0 8rpx 25rpx rgba(102, 126, 234, 0.15);
-  border-color: var(--primary-color);
-}
-
-.insight-item:last-child {
-  margin-bottom: 0;
-}
-
-.insight-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15rpx;
-}
-
-.insight-icon {
-  font-size: 32rpx;
-  margin-right: 15rpx;
-  animation: iconFloat 3s ease-in-out infinite;
-}
-
-.insight-title {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: var(--text-primary);
-  flex: 1;
-}
-
-.insight-content {
-  font-size: 26rpx;
-  line-height: 1.7;
-  color: var(--text-secondary);
-  padding-left: 47rpx;
-}
-
-/* 建议系统优化 */
-.suggestion-tabs {
-  display: flex;
-  margin-bottom: 30rpx;
-  background: white;
-  border-radius: 20rpx;
-  padding: 10rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
-  border: 2rpx solid #f0f0f0;
-}
-
-.tab-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 18rpx 15rpx;
-  border-radius: 15rpx;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.tab-item.active {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.3);
-  transform: translateY(-2rpx);
-}
-
-.tab-icon {
-  font-size: 26rpx;
-  margin-bottom: 8rpx;
-  transition: transform 0.3s ease;
-}
-
-.tab-item.active .tab-icon {
-  transform: scale(1.1);
-}
-
-.tab-text {
-  font-size: 22rpx;
-  color: var(--text-secondary);
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.tab-item.active .tab-text {
-  color: white;
-  font-weight: 700;
-}
-
-.suggestion-content {
-  display: flex;
-  flex-direction: column;
-  gap: 25rpx;
-}
-
-.suggestion-item {
-  padding: 30rpx;
-  border: 2rpx solid #f0f0f0;
-  border-radius: 20rpx;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: white;
-  position: relative;
-  overflow: hidden;
-}
-
-.suggestion-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4rpx;
-  background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-}
-
-.suggestion-item:hover {
-  border-color: var(--primary-color);
-  transform: translateY(-3rpx);
-  box-shadow: 0 10rpx 30rpx rgba(102, 126, 234, 0.15);
-}
-
-.suggestion-item:hover::before {
-  transform: translateX(0);
-}
-
-.suggestion-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15rpx;
-}
-
-.suggestion-title {
-  font-size: 30rpx;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.difficulty-tag {
-  padding: 8rpx 16rpx;
-  border-radius: 25rpx;
-  font-size: 20rpx;
-  color: white;
-  font-weight: 600;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
-}
-
-.difficulty-tag.easy {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
-}
-
-.difficulty-tag.medium {
-  background: linear-gradient(135deg, #FF9800, #f57c00);
-}
-
-.difficulty-tag.hard {
-  background: linear-gradient(135deg, #F44336, #d32f2f);
-}
-
-.suggestion-desc {
-  font-size: 26rpx;
-  line-height: 1.7;
-  color: var(--text-secondary);
-  margin-bottom: 25rpx;
-}
-
-.suggestion-actions {
-  display: flex;
-  gap: 15rpx;
-}
-
-.action-btn {
-  flex: 1;
-  height: 70rpx;
-  border-radius: 20rpx;
-  font-size: 26rpx;
-  font-weight: 600;
-  border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.action-btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  transition: all 0.6s ease;
-  transform: translate(-50%, -50%);
-}
-
-.action-btn:active::before {
-  width: 300rpx;
-  height: 300rpx;
-}
-
-.action-btn.primary {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
-  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.3);
-}
-
-.action-btn.primary:hover {
-  transform: translateY(-2rpx);
-  box-shadow: 0 8rpx 25rpx rgba(102, 126, 234, 0.4);
-}
-
-.action-btn.secondary {
-  background: white;
-  color: var(--primary-color);
-  border: 2rpx solid var(--primary-color);
-  box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.1);
-}
-
-.action-btn.secondary:hover {
-  background: var(--primary-color);
-  color: white;
-  transform: translateY(-2rpx);
-}
-
-.action-btn.tertiary {
-  background: linear-gradient(135deg, #fff8e1, #ffecb3);
-  color: #f57c00;
-  border: 2rpx solid #f57c00;
-  flex: 0.8;
-}
-
-.action-btn.tertiary:hover {
-  background: #f57c00;
-  color: white;
-  transform: translateY(-2rpx);
-}
-
-/* 分享和操作按钮优化 */
-.insight-share-btn {
-  margin-left: auto;
-  padding: 10rpx 16rpx;
-  background: linear-gradient(135deg, #f0f8ff, #e3f2fd);
-  border: 2rpx solid var(--primary-color);
-  border-radius: 25rpx;
-  transition: all 0.3s ease;
-}
-
-.insight-share-btn:hover {
-  background: var(--primary-color);
-  transform: scale(1.05);
-}
-
-.insight-share-btn:hover .share-icon {
-  color: white;
-}
-
-.share-icon {
-  font-size: 22rpx;
-  color: var(--primary-color);
-  transition: color 0.3s ease;
-}
-
-.insight-actions {
-  margin-top: 20rpx;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.insight-action-btn {
-  padding: 12rpx 25rpx;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
-  border: none;
-  border-radius: 25rpx;
-  font-size: 22rpx;
-  font-weight: 600;
-  box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.3);
-  transition: all 0.3s ease;
-}
-
-.insight-action-btn:hover {
-  transform: translateY(-2rpx);
-  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.4);
-}
-
-/* 趋势图表优化 */
-.trend-chart {
-  margin: 25rpx 0;
-  padding: 20rpx;
-  background: linear-gradient(135deg, #f8f9ff, #e8f4fd);
-  border-radius: 20rpx;
-  border: 2rpx solid rgba(102, 126, 234, 0.1);
-}
-
-.chart-canvas {
-  width: 100%;
-  height: 300rpx;
-  border-radius: 15rpx;
-}
-
-.trend-summary {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 25rpx;
-  padding: 20rpx;
-  background: white;
-  border-radius: 15rpx;
-  box-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.05);
-}
-
-.trend-item {
-  text-align: center;
-}
-
-.trend-label {
-  font-size: 22rpx;
-  color: var(--text-secondary);
-  display: block;
-  margin-bottom: 8rpx;
-}
-
-.trend-value {
-  font-size: 28rpx;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.trend-up {
-  color: var(--success-color);
-}
-
-.trend-down {
-  color: var(--error-color);
-}
-
-.trend-stable {
-  color: var(--warning-color);
-}
-
-/* 底部操作区优化 */
-.bottom-actions {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  padding: 25rpx;
-  display: flex;
-  gap: 20rpx;
-  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10rpx);
-  border-top: 1rpx solid rgba(0, 0, 0, 0.05);
-}
-
-.action-button {
-  flex: 1;
-  height: 80rpx;
-  border-radius: 20rpx;
-  font-size: 28rpx;
-  font-weight: 600;
-  border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.action-button.primary {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
-  box-shadow: 0 6rpx 20rpx rgba(102, 126, 234, 0.3);
-}
-
-.action-button.primary:hover {
-  transform: translateY(-2rpx);
-  box-shadow: 0 8rpx 25rpx rgba(102, 126, 234, 0.4);
-}
-
-.action-button.secondary {
-  background: white;
-  color: var(--primary-color);
-  border: 2rpx solid var(--primary-color);
-  box-shadow: 0 4rpx 15rpx rgba(102, 126, 234, 0.1);
-}
-
-.action-button.secondary:hover {
-  background: var(--primary-color);
-  color: white;
-  transform: translateY(-2rpx);
-}
-
-/* 动画定义 */
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-@keyframes bounce {
-  0%, 80%, 100% {
-    transform: scale(0);
-  }
-  40% {
-    transform: scale(1);
-  }
-}
-
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
 }
 
 @keyframes shimmer {
@@ -1739,98 +997,740 @@ onMounted(() => {
   100% { transform: translateX(100%); }
 }
 
-@keyframes emotionPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+.intensity-text {
+  font-size: 24rpx;
+  color: #4a5568;
+  font-weight: 600;
+  align-self: flex-end;
 }
 
-@keyframes iconFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3rpx); }
+.emotion-details {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
 }
 
-/* 响应式优化 */
-@media (max-width: 750rpx) {
-  .page-header {
-    flex-direction: column;
-    gap: 20rpx;
-    align-items: stretch;
+.emotion-name {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #2d3748;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+}
+
+.emotion-meta {
+  display: flex;
+  gap: 20rpx;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.meta-icon {
+  font-size: 20rpx;
+  opacity: 0.8;
+}
+
+.meta-text {
+  font-size: 24rpx;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+/* 情绪光谱卡片 */
+.emotion-spectrum-card {
+  padding: 30rpx;
+  overflow: hidden;
+}
+
+.spectrum-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  position: relative;
+  z-index: 2;
+}
+
+.spectrum-item {
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.spectrum-item:active {
+  transform: scale(0.98);
+}
+
+.spectrum-item.selected {
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(102, 126, 234, 0.5);
+  box-shadow: 0 4rpx 20rpx rgba(102, 126, 234, 0.2);
+}
+
+.spectrum-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.spectrum-name-section {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.spectrum-icon {
+  font-size: 24rpx;
+}
+
+.spectrum-name {
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 28rpx;
+}
+
+.spectrum-percentage {
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 26rpx;
+}
+
+.spectrum-bar-container {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 10rpx;
+  height: 16rpx;
+  overflow: hidden;
+  position: relative;
+}
+
+.spectrum-bar-fill {
+  height: 100%;
+  border-radius: 10rpx;
+  transition: width 1s ease-out;
+  position: relative;
+}
+
+.spectrum-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.spectrum-color-0 {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.spectrum-color-1 {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.spectrum-color-2 {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+/* 情绪详情信息 */
+.emotion-detail-info {
+  margin-top: 20rpx;
+  padding: 20rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 12rpx;
+  border-top: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+.detail-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+  margin-bottom: 20rpx;
+}
+
+.metric-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metric-label {
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 24rpx;
+}
+
+.metric-value-container {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.metric-stars {
+  display: flex;
+  gap: 2rpx;
+}
+
+.star {
+  color: #d1d5db;
+  font-size: 20rpx;
+  transition: color 0.3s ease;
+}
+
+.star.filled {
+  color: #f59e0b;
+}
+
+.metric-text {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 22rpx;
+}
+
+.metric-value {
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 24rpx;
+}
+
+.emotion-characteristics {
+  margin-bottom: 20rpx;
+}
+
+.characteristics-title {
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 26rpx;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.characteristics-text {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.related-emotions {
+  margin-top: 15rpx;
+}
+
+.related-title {
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 26rpx;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.related-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.related-tag {
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  border-radius: 16rpx;
+  padding: 6rpx 12rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+/* 核心洞察详情展开 */
+.core-insights-detail {
+  margin-top: 30rpx;
+  padding: 25rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20rpx);
   }
-  
-  .header-actions {
-    justify-content: center;
-    gap: 10rpx;
-  }
-  
-  .header-btn {
-    flex-direction: row;
-    min-width: auto;
-    padding: 15rpx 20rpx;
-    flex: 1;
-  }
-  
-  .btn-icon {
-    margin-bottom: 0;
-    margin-right: 8rpx;
-  }
-  
-  .suggestion-actions {
-    flex-direction: column;
-    gap: 15rpx;
-  }
-  
-  .action-btn {
-    flex: none;
-  }
-  
-  .primary-emotion {
-    flex-direction: column;
-    text-align: center;
-    gap: 15rpx;
-  }
-  
-  .spectrum-item {
-    flex-direction: column;
-    gap: 10rpx;
-    align-items: stretch;
-  }
-  
-  .spectrum-name {
-    min-width: auto;
-    text-align: center;
-  }
-  
-  .spectrum-value {
-    text-align: center;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* 深色模式支持 */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text-primary: #ffffff;
-    --text-secondary: #b0b0b0;
-    --background-color: #1a1a1a;
-    --border-color: #333333;
-  }
-  
-  .container {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-  }
-  
-  .analysis-content > view {
-    background: #2d2d2d;
-    border-color: #404040;
-  }
-  
-  .insight-item {
-    background: linear-gradient(135deg, #2d2d2d 0%, #3d3d3d 100%);
-    border-color: #404040;
-  }
-  
-  .suggestion-item {
-    background: #2d2d2d;
-    border-color: #404040;
-  }
+.insights-section {
+  margin-bottom: 30rpx;
+}
+
+.insights-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.insights-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.insight-item {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.insight-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 15rpx;
+}
+
+.insight-icon {
+  font-size: 28rpx;
+}
+
+.insight-category {
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 28rpx;
+  flex: 1;
+}
+
+.insight-confidence {
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 20rpx;
+  padding: 6rpx 12rpx;
+}
+
+.confidence-text {
+  color: #15803d;
+  font-weight: 700;
+  font-size: 22rpx;
+}
+
+.insight-description {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 26rpx;
+  line-height: 1.6;
+  margin-bottom: 15rpx;
+}
+
+.insight-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.insight-tag {
+  background: rgba(102, 126, 234, 0.2);
+  color: #667eea;
+  border-radius: 16rpx;
+  padding: 6rpx 12rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.emotion-triggers-section {
+  padding: 25rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.triggers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.trigger-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 15rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.trigger-icon-container {
+  background: rgba(102, 126, 234, 0.2);
+  border-radius: 12rpx;
+  padding: 10rpx;
+  min-width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trigger-icon {
+  font-size: 24rpx;
+}
+
+.trigger-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.trigger-name {
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 28rpx;
+}
+
+.trigger-description {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.trigger-intensity {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  min-width: 120rpx;
+}
+
+.intensity-bar {
+  height: 8rpx;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 10rpx;
+  overflow: hidden;
+  position: relative;
+}
+
+.intensity-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+  border-radius: 10rpx;
+  transition: width 1s ease-out;
+  position: relative;
+}
+
+.intensity-label {
+  font-size: 20rpx;
+  color: #4a5568;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* 情绪光谱总览图表 */
+.spectrum-chart-section {
+  margin-top: 30rpx;
+  padding: 25rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: slideDown 0.3s ease-out;
+}
+
+.chart-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 25rpx;
+  display: block;
+  text-align: center;
+}
+
+.emotion-radar-chart {
+  position: relative;
+  width: 100%;
+  height: 300rpx;
+  margin-bottom: 25rpx;
+}
+
+.radar-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radar-grid {
+  position: absolute;
+  width: 200rpx;
+  height: 200rpx;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.grid-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+}
+
+.grid-line {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transform-origin: center top;
+}
+
+.radar-data {
+  position: absolute;
+  width: 200rpx;
+  height: 200rpx;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.radar-point {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.point-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+}
+
+.color-0 .point-dot {
+  background: #ef4444;
+}
+
+.color-1 .point-dot {
+  background: #f59e0b;
+}
+
+.color-2 .point-dot {
+  background: #10b981;
+}
+
+.point-label {
+  position: absolute;
+  top: -30rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #2d3748;
+  font-weight: 600;
+  font-size: 20rpx;
+  white-space: nowrap;
+  text-shadow: 0 1rpx 2rpx rgba(255, 255, 255, 0.8);
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 15rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16rpx;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.legend-color {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+}
+
+.legend-text {
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 20rpx;
+}
+
+/* AI建议卡片 */
+.ai-suggestions-card {
+  padding: 30rpx;
+  overflow: hidden;
+}
+
+.suggestions-content {
+  display: flex;
+  flex-direction: column;
+  gap: 25rpx;
+  position: relative;
+  z-index: 2;
+}
+
+.suggestion-category {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20rpx;
+  padding: 25rpx;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.category-icon {
+  font-size: 28rpx;
+}
+
+.category-title {
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 28rpx;
+  flex: 1;
+}
+
+.category-priority {
+  border-radius: 20rpx;
+  padding: 6rpx 12rpx;
+}
+
+.priority-high {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.priority-medium {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.priority-low {
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.priority-text {
+  font-weight: 700;
+  font-size: 22rpx;
+}
+
+.priority-high .priority-text {
+  color: #dc2626;
+}
+
+.priority-medium .priority-text {
+  color: #d97706;
+}
+
+.priority-low .priority-text {
+  color: #059669;
+}
+
+.category-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 16rpx;
+  padding: 20rpx;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.suggestion-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.suggestion-title {
+  color: #2d3748;
+  font-weight: 700;
+  font-size: 26rpx;
+}
+
+.suggestion-description {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.suggestion-benefits {
+  margin-top: 10rpx;
+}
+
+.benefits-title {
+  color: #667eea;
+  font-weight: 700;
+  font-size: 22rpx;
+  margin-bottom: 5rpx;
+}
+
+.benefits-text {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 22rpx;
+  line-height: 1.4;
+}
+
+.suggestion-action {
+  display: flex;
+  align-items: center;
+}
+
+.action-btn {
+  background: var(--primary-gradient);
+  color: white;
+  border: none;
+  border-radius: 20rpx;
+  padding: 12rpx 20rpx;
+  font-weight: 700;
+  font-size: 22rpx;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+  min-width: 80rpx;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.4);
+}
+
+.action-text {
+  font-size: 22rpx;
 }
 </style> 

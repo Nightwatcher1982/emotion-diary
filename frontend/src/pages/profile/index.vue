@@ -386,35 +386,82 @@ onMounted(() => {
 
 <style scoped>
 /* 页面特定变量（继承全局变量） */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --shadow-light: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
+  --shadow-medium: 0 12rpx 48rpx rgba(0, 0, 0, 0.18);
+  --shadow-heavy: 0 16rpx 64rpx rgba(0, 0, 0, 0.24);
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --success-gradient: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  --warning-gradient: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  --error-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  --text-primary: #2d3748;
+  --text-secondary: #4a5568;
+  --text-placeholder: #a0aec0;
+  --primary-color: #667eea;
+  --success-color: #48bb78;
+  --warning-color: #ed8936;
+  --error-color: #f56565;
+}
+
 .container {
-  min-height: 100vh;
+  padding: 0;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 0 30rpx 120rpx;
+  min-height: 100vh;
   position: relative;
+  padding-bottom: 120rpx;
+}
+
+.container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* 用户信息卡片 - 现代化设计 */
 .user-card {
   background: var(--glass-bg);
-  backdrop-filter: blur(20rpx);
-  border: 2rpx solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
   border-radius: 25rpx;
   padding: 50rpx 40rpx;
-  margin: 30rpx 0;
-  box-shadow: var(--shadow-medium);
+  margin: 30rpx 20rpx;
+  box-shadow: var(--shadow-light);
   display: flex;
   align-items: center;
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
 }
 
 .user-card:hover {
   transform: translateY(-4rpx);
-  box-shadow: var(--shadow-heavy);
+  box-shadow: var(--shadow-medium);
 }
 
 .user-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
+}
+
+.user-card::after {
   content: '';
   position: absolute;
   top: 0;
@@ -428,6 +475,7 @@ onMounted(() => {
 .user-avatar {
   position: relative;
   margin-right: 30rpx;
+  z-index: 2;
 }
 
 .avatar-image {
@@ -473,6 +521,7 @@ onMounted(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
+  z-index: 2;
 }
 
 .username {
@@ -508,6 +557,7 @@ onMounted(() => {
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  z-index: 2;
 }
 
 .edit-profile::before {
@@ -541,13 +591,16 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 25rpx;
-  margin-bottom: 40rpx;
+  margin: 0 20rpx 30rpx;
+  position: relative;
+  z-index: 1;
 }
 
 .overview-item {
   background: var(--glass-bg);
-  backdrop-filter: blur(20rpx);
-  border: 2rpx solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
   border-radius: 25rpx;
   padding: 40rpx 30rpx;
   text-align: center;
@@ -558,6 +611,17 @@ onMounted(() => {
 }
 
 .overview-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
+}
+
+.overview-item::after {
   content: '';
   position: absolute;
   top: 0;
@@ -574,7 +638,7 @@ onMounted(() => {
   box-shadow: var(--shadow-medium);
 }
 
-.overview-item:hover::before {
+.overview-item:hover::after {
   transform: scaleX(1);
 }
 
@@ -602,154 +666,75 @@ onMounted(() => {
   font-weight: 500;
 }
 
-/* 功能菜单 - 现代化卡片 */
+/* 功能菜单 */
 .menu-section {
-  margin-bottom: 40rpx;
+  position: relative;
+  z-index: 1;
 }
 
 .menu-group {
   background: var(--glass-bg);
-  backdrop-filter: blur(20rpx);
-  border: 2rpx solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
   border-radius: 25rpx;
-  margin-bottom: 30rpx;
-  overflow: hidden;
+  margin: 0 20rpx 30rpx;
   box-shadow: var(--shadow-light);
-  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.menu-group:hover {
-  transform: translateY(-2rpx);
-  box-shadow: var(--shadow-medium);
+.menu-group::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
 }
 
 .group-title {
   font-size: 28rpx;
-  color: var(--text-primary);
-  padding: 30rpx 40rpx 20rpx;
   font-weight: 700;
+  color: var(--text-primary);
+  padding: 30rpx 30rpx 20rpx;
   display: block;
-  background: var(--primary-gradient);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   position: relative;
-}
-
-.group-title::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 40rpx;
-  right: 40rpx;
-  height: 2rpx;
-  background: var(--primary-gradient);
-  opacity: 0.3;
+  z-index: 2;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 30rpx 40rpx;
-  border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 25rpx 30rpx;
+  border-bottom: 1px solid var(--glass-border);
+  transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
+  z-index: 2;
 }
 
 .menu-item:last-child {
   border-bottom: none;
 }
 
-.menu-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: left 0.5s ease;
-}
-
-.menu-item:hover::before {
-  left: 100%;
-}
-
 .menu-item:hover {
   background: rgba(255, 255, 255, 0.1);
-  transform: translateX(8rpx);
 }
 
-.menu-item:active {
-  transform: translateX(4rpx) scale(0.98);
-}
-
-.menu-icon {
-  font-size: 36rpx;
-  margin-right: 25rpx;
-  width: 50rpx;
-  text-align: center;
-  filter: drop-shadow(0 2rpx 8rpx rgba(0, 0, 0, 0.1));
-}
-
-.menu-text {
-  flex: 1;
-  font-size: 30rpx;
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-.menu-value {
-  font-size: 26rpx;
-  color: var(--text-secondary);
-  margin-right: 15rpx;
-  padding: 8rpx 16rpx;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 15rpx;
-  font-weight: 500;
-}
-
-.menu-badge {
-  background: var(--success-gradient);
-  color: white;
-  padding: 8rpx 16rpx;
-  border-radius: 20rpx;
-  font-size: 22rpx;
-  margin-right: 15rpx;
-  font-weight: 600;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
-  animation: glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
-  from { box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15); }
-  to { box-shadow: 0 4rpx 20rpx rgba(76, 175, 80, 0.3); }
-}
-
-.menu-arrow {
-  font-size: 28rpx;
-  color: var(--text-placeholder);
-  transition: all 0.3s ease;
-}
-
-.menu-item:hover .menu-arrow {
-  transform: translateX(4rpx);
-  color: var(--primary-color);
-}
-
-/* 成就展示 - 现代化预览 */
+/* 成就展示 */
 .achievements-preview {
   background: var(--glass-bg);
-  backdrop-filter: blur(20rpx);
-  border: 2rpx solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
   border-radius: 25rpx;
-  padding: 40rpx;
-  margin-bottom: 40rpx;
+  margin: 0 20rpx 30rpx;
   box-shadow: var(--shadow-light);
-  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 .achievements-preview::before {
@@ -757,15 +742,10 @@ onMounted(() => {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  height: 6rpx;
-  background: var(--warning-gradient);
-  border-radius: 25rpx 25rpx 0 0;
-}
-
-.achievements-preview:hover {
-  transform: translateY(-4rpx);
-  box-shadow: var(--shadow-medium);
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
 }
 
 .preview-header {
@@ -862,51 +842,29 @@ onMounted(() => {
   font-weight: 600;
 }
 
-/* 退出登录 - 现代化按钮 */
+/* 退出登录 */
 .logout-section {
-  padding: 40rpx 0;
+  position: relative;
+  z-index: 1;
+  padding: 0 20rpx;
 }
 
 .logout-button {
   width: 100%;
-  height: 90rpx;
-  background: var(--glass-bg);
-  backdrop-filter: blur(20rpx);
-  color: var(--error-color);
-  border: 2rpx solid var(--error-color);
+  background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+  border: none;
   border-radius: 25rpx;
-  font-size: 30rpx;
+  padding: 25rpx;
+  color: white;
+  font-size: 32rpx;
   font-weight: 600;
   box-shadow: var(--shadow-light);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.logout-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: var(--error-color);
-  transition: left 0.3s ease;
-  z-index: -1;
-}
-
-.logout-button:hover::before {
-  left: 0;
+  transition: all 0.3s ease;
 }
 
 .logout-button:hover {
-  color: white;
-  transform: translateY(-4rpx);
+  transform: translateY(-2rpx);
   box-shadow: var(--shadow-medium);
-}
-
-.logout-button:active {
-  transform: translateY(-2rpx) scale(0.98);
 }
 
 /* 深色模式特定样式调整 */

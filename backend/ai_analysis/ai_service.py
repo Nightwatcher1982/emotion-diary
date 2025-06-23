@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class AIAnalysisService:
-    """AI情绪分析服务 - 集成百度千帆ERNIE-Bot (使用API Key Bearer Token认证)"""
+    """AI情绪分析服务 - 测试模式版本（使用模拟结果，不调用真实API）"""
     
     def __init__(self):
         self.emotion_mappings = {
@@ -23,144 +23,89 @@ class AIAnalysisService:
             'fearful': {'name': '恐惧', 'keywords': ['害怕', '恐惧', '担忧', '惊慌', '不安']}
         }
         
-        # 千帆API配置
-        self.api_base_url = "https://qianfan.baidubce.com/v2/chat/completions"
+        # 强制使用测试模式
         self.api_key = None
-        self.auth_method = None
+        self.auth_method = "TEST_MODE"
         
-        self._initialize_qianfan_client()
-    
-    def _initialize_qianfan_client(self):
-        """初始化千帆API客户端"""
-        try:
-            # 检查API Key配置
-            if self._has_api_key_config():
-                self.api_key = settings.QIANFAN_API_KEY
-                self.auth_method = "API_KEY"
-                logger.info("千帆AI服务初始化成功 (API Key Bearer Token认证)")
-                return
-            
-            # 向后兼容：检查旧的AK/SK配置
-            elif self._has_legacy_config():
-                logger.warning("检测到旧的AK/SK配置，但千帆平台已不支持此方式，请升级到API Key")
-                self.api_key = None
-                self.auth_method = None
-                return
-                
-            else:
-                logger.warning("未找到有效的千帆API Key配置，使用模拟模式")
-                self.api_key = None
-                self.auth_method = None
-                
-        except Exception as e:
-            logger.error(f"千帆AI服务初始化失败: {e}")
-            self.api_key = None
-            self.auth_method = None
-    
-    def _has_api_key_config(self):
-        """检查是否有API Key配置"""
-        return (hasattr(settings, 'QIANFAN_API_KEY') and 
-                settings.QIANFAN_API_KEY and 
-                settings.QIANFAN_API_KEY.strip())
-    
-    def _has_legacy_config(self):
-        """检查是否有旧的AK/SK配置（已过时）"""
-        return (hasattr(settings, 'QIANFAN_AK') and 
-                hasattr(settings, 'QIANFAN_SK') and
-                settings.QIANFAN_AK and 
-                settings.QIANFAN_SK)
+        logger.info("AI分析服务初始化成功 (测试模式 - 不调用真实API)")
     
     def get_auth_status(self):
-        """获取认证状态信息"""
-        if self.api_key and self.auth_method:
-            return {
-                'status': 'authenticated',
-                'message': 'API Key认证已配置',
-                'auth_method': self.auth_method,
-                'ai_enabled': True
-            }
-        
-        if self._has_legacy_config():
-            return {
-                'status': 'deprecated_config',
-                'message': '检测到旧的AK/SK配置，但平台已不支持，请升级到API Key',
-                'auth_method': None,
-                'ai_enabled': False
-            }
-        
+        """获取认证状态信息 - 测试模式"""
         return {
-            'status': 'not_configured',
-            'message': '未配置API Key，使用模拟模式',
-            'auth_method': None,
-            'ai_enabled': False
+            'status': 'test_mode',
+            'message': '测试模式已启用 - 使用模拟AI分析结果',
+            'auth_method': 'TEST_MODE',
+            'ai_enabled': True  # 标记为启用，但使用模拟结果
         }
     
     def _call_qianfan_api(self, prompt: str, max_tokens: int = 1000) -> str:
-        """调用千帆API（使用Bearer Token认证）"""
-        if not self.api_key:
-            logger.warning("API Key未配置，使用模拟回复")
-            return self._generate_mock_response(prompt)
-        
-        try:
-            headers = {
-                'Content-Type': 'application/json',
-                'Authorization': f'Bearer {self.api_key}'
-            }
-            
-            payload = {
-                'model': 'ernie-3.5-8k',  # 使用ernie-3.5-8k模型
-                'messages': [
-                    {
-                        'role': 'user',
-                        'content': prompt
-                    }
-                ],
-                'max_tokens': max_tokens,
-                'temperature': 0.7
-            }
-            
-            response = requests.post(
-                self.api_base_url,
-                headers=headers,
-                json=payload,
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                result = response.json()
-                if 'choices' in result and len(result['choices']) > 0:
-                    content = result['choices'][0].get('message', {}).get('content', '')
-                    if content:
-                        logger.info("千帆API调用成功")
-                        return content
-                    else:
-                        logger.error("千帆API返回内容为空")
-                        return self._generate_mock_response(prompt)
-                else:
-                    logger.error(f"千帆API返回格式异常: {result}")
-                    return self._generate_mock_response(prompt)
-            else:
-                logger.error(f"千帆API调用失败: {response.status_code} - {response.text}")
-                return self._generate_mock_response(prompt)
-                
-        except requests.exceptions.Timeout:
-            logger.error("千帆API调用超时")
-            return self._generate_mock_response(prompt)
-        except requests.exceptions.RequestException as e:
-            logger.error(f"千帆API调用网络错误: {e}")
-            return self._generate_mock_response(prompt)
-        except Exception as e:
-            logger.error(f"千帆API调用失败: {e}")
-            return self._generate_mock_response(prompt)
+        """模拟API调用（测试模式）"""
+        logger.info("使用模拟AI分析 - 测试模式")
+        return self._generate_enhanced_mock_response(prompt)
     
-    def _generate_mock_response(self, prompt: str) -> str:
-        """生成模拟回复（当千帆API不可用时）"""
-        if "情绪分析" in prompt:
-            return "根据您的描述，我分析您当前的主要情绪是焦虑，这可能与工作压力有关。建议您尝试深呼吸练习和适当的休息。"
-        elif "建议" in prompt:
-            return "建议您：1. 进行5分钟的深呼吸练习；2. 尝试散步或轻度运动；3. 与朋友或家人交流分享感受。"
+    def _generate_enhanced_mock_response(self, prompt: str) -> str:
+        """生成增强的模拟回复（测试模式专用）"""
+        # 根据提示词内容生成相应的模拟回复
+        if "快乐" in prompt or "开心" in prompt:
+            return json.dumps({
+                "emotion_analysis": "您当前处于积极的情绪状态，快乐情绪有助于提升创造力和社交能力。这种正面情绪可能源于近期的成就感或良好的人际互动。",
+                "psychological_state": "心理状态良好，情绪稳定，具有较强的抗压能力和适应性。",
+                "coping_strategies": ["保持当前的积极状态", "分享快乐给身边的人", "记录美好时刻", "适度庆祝成就"],
+                "prevention_advice": "继续保持积极的生活态度，建立支持性的社交网络，培养多样化的兴趣爱好。",
+                "confidence_score": 92,
+                "key_insights": ["积极情绪具有传染性", "快乐状态有助于问题解决能力"]
+            }, ensure_ascii=False)
+        
+        elif "悲伤" in prompt or "难过" in prompt:
+            return json.dumps({
+                "emotion_analysis": "您正在经历悲伤情绪，这是对失落或挫折的正常反应。悲伤虽然不舒服，但它有助于处理情感创伤和适应变化。",
+                "psychological_state": "当前情绪较为低落，需要时间和支持来处理内心的情感。建议寻求适当的社会支持。",
+                "coping_strategies": ["允许自己感受悲伤", "寻求朋友或家人的陪伴", "进行轻度运动如散步", "写日记表达情感"],
+                "prevention_advice": "建立情感支持网络，学习健康的情绪表达方式，保持规律的作息时间。",
+                "confidence_score": 88,
+                "key_insights": ["悲伤是情感愈合的必要过程", "适当的社会支持能够加速恢复"]
+            }, ensure_ascii=False)
+        
+        elif "愤怒" in prompt or "生气" in prompt:
+            return json.dumps({
+                "emotion_analysis": "愤怒情绪通常源于感知到的不公或挫折。这种情绪提醒我们某些界限被越过，需要采取行动保护自己的利益。",
+                "psychological_state": "情绪激活水平较高，可能影响理性思考。建议先冷静下来再做决定。",
+                "coping_strategies": ["深呼吸10次", "暂时离开冲突现场", "进行体育锻炼释放能量", "与信任的人倾诉"],
+                "prevention_advice": "学习愤怒管理技巧，识别愤怒的早期信号，培养耐心和宽容的品质。",
+                "confidence_score": 85,
+                "key_insights": ["愤怒往往掩盖着更深层的情感", "适当的愤怒表达是健康的"]
+            }, ensure_ascii=False)
+        
+        elif "焦虑" in prompt or "紧张" in prompt:
+            return json.dumps({
+                "emotion_analysis": "焦虑反映了对未来不确定性的担忧。适度的焦虑有助于提高警觉性，但过度焦虑可能影响日常功能。",
+                "psychological_state": "存在一定程度的心理紧张，可能影响睡眠和注意力。建议学习放松技巧。",
+                "coping_strategies": ["练习正念冥想", "制定具体的行动计划", "进行渐进性肌肉放松", "限制咖啡因摄入"],
+                "prevention_advice": "建立规律的作息，学习压力管理技巧，保持适度运动，培养乐观思维。",
+                "confidence_score": 90,
+                "key_insights": ["焦虑往往源于对控制感的缺失", "具体的行动计划能够减少不确定性"]
+            }, ensure_ascii=False)
+        
+        elif "平静" in prompt or "放松" in prompt:
+            return json.dumps({
+                "emotion_analysis": "平静状态表明您具有良好的情绪调节能力。这种状态有利于清晰思考和做出理性决策。",
+                "psychological_state": "心理状态平衡，具有较好的自我调节能力和内在稳定性。",
+                "coping_strategies": ["保持当前的平静状态", "进行冥想或瑜伽", "享受宁静的时光", "培养感恩的心态"],
+                "prevention_advice": "继续保持良好的生活习惯，定期进行自我反思，维护内心的平衡状态。",
+                "confidence_score": 94,
+                "key_insights": ["平静是内在智慧的体现", "稳定的情绪状态有助于整体健康"]
+            }, ensure_ascii=False)
+        
         else:
-            return "感谢您分享您的情绪状态，我会为您提供专业的分析和建议。"
+            # 通用模拟回复
+            return json.dumps({
+                "emotion_analysis": "根据您的情绪记录，我分析出您当前的情绪状态具有一定的复杂性。每种情绪都有其存在的意义和价值。",
+                "psychological_state": "整体心理状态处于正常范围内，建议继续关注自己的情绪变化。",
+                "coping_strategies": ["保持自我觉察", "定期进行情绪记录", "寻求适当的支持", "培养健康的生活习惯"],
+                "prevention_advice": "建立稳定的日常routine，保持社交联系，定期进行自我关怀活动。",
+                "confidence_score": 82,
+                "key_insights": ["情绪是内心世界的重要信息", "自我觉察是情绪健康的基础"]
+            }, ensure_ascii=False)
     
     def analyze_emotion_records(self, records: List[EmotionRecord], analysis_type: str = 'comprehensive') -> Dict[str, Any]:
         """分析情绪记录"""
@@ -184,27 +129,25 @@ class AIAnalysisService:
             'trend': self._analyze_trend(records),
             'deep_analysis': self._perform_deep_analysis(records, ai_enhanced_analysis),
             'action_plan': self._create_action_plan(records, ai_enhanced_analysis),
-            'ai_powered': self.api_key is not None  # 标记是否使用了真实AI
+            'ai_powered': True,  # 测试模式：标记为AI驱动但使用模拟结果
+            'test_mode': True   # 明确标记为测试模式
         }
         
         return analysis_result
     
     def _get_ai_enhanced_analysis(self, record: EmotionRecord) -> Dict[str, Any]:
-        """使用千帆AI进行增强分析"""
-        if not self.api_key:
-            return {}
-        
+        """使用AI进行增强分析（测试模式使用模拟结果）"""
         # 构建分析提示词
         prompt = self._build_analysis_prompt(record)
         
         try:
-            # 调用AI分析
+            # 调用AI分析（测试模式会返回模拟结果）
             ai_response = self._call_qianfan_api(prompt, max_tokens=800)
             
             # 解析AI回复
             parsed_analysis = self._parse_ai_response(ai_response)
             
-            logger.info(f"AI增强分析完成，记录ID: {record.id}")
+            logger.info(f"AI增强分析完成（测试模式），记录ID: {record.id}")
             return parsed_analysis
             
         except Exception as e:
