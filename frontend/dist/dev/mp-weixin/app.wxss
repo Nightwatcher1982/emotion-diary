@@ -1,0 +1,87 @@
+
+/* 全局样式 */
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* 浅色模式变量 */
+:root {
+  --primary-color: #4A90E2;
+  --secondary-color: #2196F3;
+  --success-color: #4CAF50;
+  --warning-color: #FF9800;
+  --error-color: #F44336;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-placeholder: #999999;
+  --border-color: #e0e0e0;
+  --background-color: #f8f9fa;
+  
+  /* 现代化设计变量 */
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --shadow-light: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 12rpx 48rpx rgba(0, 0, 0, 0.15);
+  --shadow-heavy: 0 20rpx 64rpx rgba(0, 0, 0, 0.2);
+}
+
+/* 深色模式变量 */
+@media (prefers-color-scheme: dark) {
+:root {
+    --primary-color: #5BA3F5;
+    --secondary-color: #42A5F5;
+    --success-color: #66BB6A;
+    --warning-color: #FFA726;
+    --error-color: #EF5350;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --text-placeholder: #808080;
+    --border-color: #404040;
+    --background-color: #1a1a2e;
+    
+    /* 深色模式毛玻璃效果 */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow-light: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
+    --shadow-medium: 0 12rpx 48rpx rgba(0, 0, 0, 0.4);
+    --shadow-heavy: 0 20rpx 64rpx rgba(0, 0, 0, 0.5);
+}
+page {
+    background-color: var(--background-color);
+    color: var(--text-primary);
+}
+}
+
+/* 浅色模式默认样式 */
+@media (prefers-color-scheme: light) {
+page {
+    background-color: var(--background-color);
+    color: var(--text-primary);
+}
+}
+
+/* 通用样式重置 */
+* {
+  box-sizing: border-box;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8rpx;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4rpx;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 4rpx;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color);
+}
+page{--status-bar-height:25px;--top-window-height:0px;--window-top:0px;--window-bottom:0px;--window-left:0px;--window-right:0px;--window-magin:0px}[data-c-h="true"]{display: none !important;}

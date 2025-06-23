@@ -1,0 +1,61 @@
+{
+  "pages": [
+    "pages/login/index",
+    "pages/index/index",
+    "pages/record/index",
+    "pages/analysis/index",
+    "pages/statistics/index",
+    "pages/profile/index",
+    "pages/profile/edit",
+    "pages/analysis/history",
+    "pages/settings/reminder",
+    "pages/settings/privacy",
+    "pages/achievements/index",
+    "pages/help/feedback"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "心晴日记",
+    "navigationBarBackgroundColor": "#4A90E2",
+    "backgroundColor": "#f8f9fa"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#4A90E2",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "static/icons/home.png",
+        "selectedIconPath": "static/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/statistics/index",
+        "text": "统计",
+        "iconPath": "static/icons/chart.png",
+        "selectedIconPath": "static/icons/chart-active.png"
+      },
+      {
+        "pagePath": "pages/record/index",
+        "text": "记录",
+        "iconPath": "static/icons/add.png",
+        "selectedIconPath": "static/icons/add-active.png"
+      },
+      {
+        "pagePath": "pages/analysis/index",
+        "text": "分析",
+        "iconPath": "static/icons/analysis.png",
+        "selectedIconPath": "static/icons/analysis-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "static/icons/profile.png",
+        "selectedIconPath": "static/icons/profile-active.png"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

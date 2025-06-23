@@ -1,0 +1,8 @@
+#!/bin/bash
+# AI情绪日记APP - 开发快捷命令
+
+# 获取脚本所在目录的绝对路径
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# 执行启动服务脚本
+"$SCRIPT_DIR/start_services.sh" "$@" 

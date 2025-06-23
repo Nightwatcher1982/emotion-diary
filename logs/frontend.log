@@ -1,0 +1,30 @@
+
+> ai-emotion-diary-frontend@1.0.0 dev:h5
+> uni
+
+Please note that in running mode, due to log output, sourcemap, and uncompressed source code, the performance and package size are not as good as release mode.
+Compiling...
+
+uni-app 有新版本发布，请执行 `npx @dcloudio/uvm@latest` 更新，更新日志详见：https://download1.dcloud.net.cn/hbuilderx/changelog/4.66.2025051912.html
+Compiler version: 3.98（vue3）
+
+  vite v4.3.5 dev server running at:
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://192.168.3.115:5173/
+
+  ready in 981ms.
+
+11:08:41 PM [vite] hmr update /src/pages/statistics/index.vue, /src/pages/statistics/index.vue?vue&type=style&index=0&scoped=e32fc36d&lang.css
+11:12:12 PM [vite] hmr update /src/pages/statistics/index.vue?vue&type=style&index=0&scoped=e32fc36d&lang.css
+11:12:41 PM [vite] hmr update /src/App.vue, /src/App.vue?vue&type=style&index=0&lang.css
+11:12:57 PM [vite] hmr update /src/pages/statistics/index.vue?vue&type=style&index=0&scoped=e32fc36d&lang.css
+11:13:15 PM [vite] hmr update /src/pages/statistics/index.vue?vue&type=style&index=0&scoped=e32fc36d&lang.css
+11:17:51 PM [vite] hmr update /src/pages/profile/index.vue?vue&type=style&index=0&scoped=f97f9319&lang.css
+11:19:10 PM [vite] hmr update /src/pages/profile/index.vue?vue&type=style&index=0&scoped=f97f9319&lang.css
+11:25:30 PM [vite] hmr update /src/pages/record/index.vue?vue&type=style&index=0&scoped=e218755a&lang.css
+11:38:45 PM [vite] hmr update /src/pages/record/index.vue
+11:39:16 PM [vite] hmr update /src/pages/record/index.vue
+11:39:35 PM [vite] hmr update /src/pages/record/index.vue
+11:39:42 PM [vite] hmr update /src/pages/record/index.vue
+11:40:24 PM [vite] hmr update /src/pages/record/index.vue
