@@ -176,66 +176,68 @@ jobs:
     - name: Test SSH connection
       run: |
         echo "🧪 测试SSH连接..."
-        ssh -o ConnectTimeout=10 ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "echo '✅ SSH连接成功'"
+        ssh -o ConnectTimeout=10 -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+          echo '✅ SSH连接成功'
+          echo '服务器信息:'
+          uname -a
+          echo '当前用户:' \$(whoami)
+          echo 'Git版本:' \$(git --version 2>/dev/null || echo 'Git未安装')
+        "
     
     - name: Deploy to server
       env:
         SERVER_HOST: ${{ secrets.SERVER_HOST }}
         SERVER_USER: ${{ secrets.SERVER_USER }}
-        PROJECT_PATH: /var/www/emotion-diary
       run: |
         echo "🚀 开始部署到服务器..."
         
-        # 创建简化的部署脚本
-        cat > deploy_script.sh << 'EOF'
-        #!/bin/bash
-        set -e
-        
-        echo "🔍 系统信息检查..."
-        echo "当前用户: $(whoami)"
-        echo "当前目录: $(pwd)"
-        echo "用户家目录: $HOME"
-        
-        PROJECT_PATH="$HOME/emotion-diary"
-        
-        echo "📂 检查项目目录: $PROJECT_PATH"
-        if [ ! -d "$PROJECT_PATH" ]; then
-          echo "📁 创建项目目录: $PROJECT_PATH"
-          mkdir -p $PROJECT_PATH
-        else
-          echo "✅ 项目目录已存在"
-        fi
-        
-        echo "📥 进入项目目录..."
-        cd $PROJECT_PATH
-        
-        echo "🔄 初始化或更新Git仓库..."
-        if [ ! -d ".git" ]; then
-          echo "🆕 克隆仓库..."
-          git clone https://github.com/Nightwatcher1982/emotion-diary.git .
-        else
-          echo "🔄 更新代码..."
-          git fetch origin
-          git reset --hard origin/main
-        fi
-        
-        echo "📊 验证部署结果..."
-        echo "项目目录内容:"
-        ls -la
-        echo "Git状态:"
-        git status --porcelain
-        echo "最新提交:"
-        git log --oneline -3
-        
-        echo "✅ 部署完成！"
-        EOF
-        
-        # 上传并执行部署脚本
-        echo "📤 上传部署脚本..."
-        scp deploy_script.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
-        
-        echo "🔧 执行部署脚本..."
-        ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "chmod +x /tmp/deploy_script.sh && /tmp/deploy_script.sh"
+        # 直接通过SSH执行命令，避免脚本传输
+        echo "🔍 检查服务器环境..."
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+          echo '🔍 系统信息检查...'
+          echo '当前用户:' \$(whoami)
+          echo '当前目录:' \$(pwd)
+          echo '用户家目录:' \$HOME
+          
+          echo '📂 检查项目目录...'
+          PROJECT_DIR=\"\$HOME/emotion-diary\"
+          
+          if [ ! -d \"\$PROJECT_DIR\" ]; then
+            echo '📁 创建项目目录:' \$PROJECT_DIR
+            mkdir -p \$PROJECT_DIR
+          else
+            echo '✅ 项目目录已存在'
+          fi
+          
+          echo '📥 进入项目目录...'
+          cd \$PROJECT_DIR
+          
+          echo '🔄 检查Git...'
+          if ! command -v git &> /dev/null; then
+            echo '❌ Git未安装'
+            exit 1
+          fi
+          
+          echo '🔄 初始化或更新Git仓库...'
+          if [ ! -d '.git' ]; then
+            echo '🆕 克隆仓库...'
+            git clone https://github.com/Nightwatcher1982/emotion-diary.git .
+          else
+            echo '🔄 更新代码...'
+            git fetch origin
+            git reset --hard origin/main
+          fi
+          
+          echo '📊 验证部署结果...'
+          echo '项目目录内容:'
+          ls -la | head -10
+          echo 'Git状态:'
+          git status --porcelain || echo '无未提交更改'
+          echo '最新提交:'
+          git log --oneline -3
+          
+          echo '✅ 部署完成！'
+        "
     
     - name: Notify deployment status
       if: always()
