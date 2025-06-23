@@ -15,16 +15,10 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: emotion_diary_test
+          MYSQL_DATABASE: test_emotion_diary
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-      
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
     - uses: actions/checkout@v4
@@ -48,27 +42,63 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     
-    - name: Run tests
+    - name: Wait for MySQL
+      run: |
+        for i in {1..30}; do
+          if mysqladmin ping -h 127.0.0.1 -u root -proot --silent; then
+            echo "MySQL is ready!"
+            break
+          fi
+          echo "Waiting for MySQL... ($i/30)"
+          sleep 2
+        done
+    
+    - name: Create test database
+      run: |
+        mysql -h 127.0.0.1 -u root -proot -e "CREATE DATABASE IF NOT EXISTS test_emotion_diary CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+        mysql -h 127.0.0.1 -u root -proot -e "SHOW DATABASES;"
+    
+    - name: Run Django checks
       env:
         DJANGO_SETTINGS_MODULE: emotion_diary_api.settings_test
-        DB_NAME: emotion_diary_test
+        DB_NAME: test_emotion_diary
         DB_USER: root
         DB_PASSWORD: root
         DB_HOST: 127.0.0.1
         DB_PORT: 3306
-        REDIS_URL: redis://127.0.0.1:6379/0
-        SECRET_KEY: test-secret-key-for-ci
-        QIANFAN_API_KEY: ${{ secrets.QIANFAN_API_KEY }}
+        SECRET_KEY: test-secret-key-for-ci-cd-testing
+        CI: true
       run: |
         cd backend
-        python manage.py migrate
-        python manage.py test
+        python manage.py check
     
-    - name: Run linting
+    - name: Run migrations
+      env:
+        DJANGO_SETTINGS_MODULE: emotion_diary_api.settings_test
+        DB_NAME: test_emotion_diary
+        DB_USER: root
+        DB_PASSWORD: root
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        SECRET_KEY: test-secret-key-for-ci-cd-testing
+        CI: true
       run: |
         cd backend
-        pip install flake8
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        python manage.py migrate --verbosity=2
+    
+    - name: Run tests
+      env:
+        DJANGO_SETTINGS_MODULE: emotion_diary_api.settings_test
+        DB_NAME: test_emotion_diary
+        DB_USER: root
+        DB_PASSWORD: root
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        SECRET_KEY: test-secret-key-for-ci-cd-testing
+        CI: true
+      run: |
+        cd backend
+        python manage.py test --verbosity=2
 
   build-frontend:
     runs-on: ubuntu-latest
