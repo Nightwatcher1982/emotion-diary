@@ -142,7 +142,7 @@ export default {
       smsCountdown: 0,
       
       // 开发环境标识
-      isDevelopment: process.env.NODE_ENV === 'development',
+      isDevelopment: true, // process.env.NODE_ENV === 'development',
       debugInfo: ''
     }
   },

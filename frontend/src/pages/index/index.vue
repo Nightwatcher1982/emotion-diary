@@ -1,5 +1,14 @@
 <template>
   <view class="container">
+    <!-- 版本标识 - 用于确认部署 -->
+    <view class="version-indicator" style="position: fixed; top: 10px; right: 10px; background: #007AFF; color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px; z-index: 9999;">
+      <text>v2025.06.23-16:00 🚀</text>
+    </view>
+    <!-- 版本标识 - 用于确认部署 -->
+    <view class="version-indicator" style="position: fixed; top: 10px; right: 10px; background: #007AFF; color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px; z-index: 9999;">
+      <text>v2025.06.23-16:00 🚀</text>
+    </view>
+    
     <!-- 顶部欢迎区域 -->
     <view class="welcome-section">
       <view class="welcome-background"></view>
