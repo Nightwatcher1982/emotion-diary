@@ -81,9 +81,12 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', '3306'),
         'OPTIONS': {
             'charset': 'utf8mb4',
+            'sql_mode': 'STRICT_TRANS_TABLES',
         },
         'TEST': {
             'NAME': 'test_emotion_diary',
+            'CHARSET': 'utf8mb4',
+            'COLLATION': 'utf8mb4_unicode_ci',
         }
     }
 }
@@ -154,9 +157,16 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
     },
     'root': {
@@ -165,6 +175,11 @@ LOGGING = {
     },
     'loggers': {
         'django': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.db.backends': {
             'handlers': ['console'],
             'level': 'WARNING',
             'propagate': False,
@@ -188,4 +203,19 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'AI情绪日记应用的API文档',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-} 
+}
+
+# 测试特定设置
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+# 禁用迁移加速测试
+class DisableMigrations:
+    def __contains__(self, item):
+        return True
+    
+    def __getitem__(self, item):
+        return None
+
+# 在CI环境中禁用迁移
+if os.environ.get('CI'):
+    MIGRATION_MODULES = DisableMigrations() 
