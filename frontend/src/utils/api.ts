@@ -1,5 +1,5 @@
 // API配置
-const API_BASE_URL = 'http://127.0.0.1:8000/api/v1'
+const API_BASE_URL = 'http://47.239.83.46:8000/api/v1'
 
 // 请求拦截器
 const request = async (url: string, options: any = {}) => {

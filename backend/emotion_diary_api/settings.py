@@ -183,11 +183,14 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://192.168.3.115:5173",
+    "http://47.239.83.46",
+    "https://47.239.83.46",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_ALL_ORIGINS = DEBUG  # 开发环境允许所有源
+# 允许所有源以支持手机浏览器访问
+CORS_ALLOW_ALL_ORIGINS = True
 
 # 百度千帆AI配置
 QIANFAN_API_KEY = config('QIANFAN_API_KEY', default='')

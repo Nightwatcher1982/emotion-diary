@@ -481,3 +481,28 @@ WARNING Not Found: /api/v1/ai/analysis/history/
 WARNING "GET /api/v1/ai/analysis/history/?page=2&page_size=10 HTTP/1.1" 404 9488
 INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4673
 INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 10265
+INFO "OPTIONS /api/v1/auth/sms/send/ HTTP/1.1" 200 0
+INFO [模拟短信] 手机号: 13800138000, 验证码: 761700, 用途: login
+INFO 验证码发送成功: 13800138000 - 761700 (login)
+INFO "POST /api/v1/auth/sms/send/ HTTP/1.1" 200 90
+INFO "OPTIONS /api/v1/auth/phone/login/ HTTP/1.1" 200 0
+INFO "POST /api/v1/auth/phone/login/ HTTP/1.1" 200 491
+INFO "OPTIONS /api/v1/emotions/records/today/ HTTP/1.1" 200 0
+INFO "OPTIONS /api/v1/emotions/records/recent/ HTTP/1.1" 200 0
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 4673
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 10265
+INFO /Volumes/PSSD/情绪日记/backend/emotion_diary_api/settings.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 23, 2025 - 12:24:16
+Django version 4.2.7, using settings 'emotion_diary_api.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+INFO Watching for file changes with StatReloader
+INFO "OPTIONS /api/v1/auth/wechat/login/ HTTP/1.1" 200 0
+INFO [模拟微信登录] 授权码: mock_code_1750667328915
+INFO "POST /api/v1/auth/wechat/login/ HTTP/1.1" 200 479
+INFO "GET /api/v1/emotions/records/today/ HTTP/1.1" 200 2
+INFO "GET /api/v1/emotions/records/recent/ HTTP/1.1" 200 2
