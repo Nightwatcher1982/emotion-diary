@@ -1,0 +1,38 @@
+# Docker镜像版本管理配置
+# AI情绪日记APP
+
+# 镜像版本管理设置
+image_management:
+  # 最大保留镜像数量
+  max_images: 3
+  
+  # 要管理的镜像名称
+  image_name: "emotion-diary-app"
+  
+  # 自动清理模式
+  auto_cleanup: true
+  
+  # 清理策略
+  cleanup_strategy: "oldest_first"  # 删除最老的镜像
+  
+  # 保护正在使用的镜像
+  protect_running: true
+
+# 构建设置
+build_settings:
+  # 构建时是否使用缓存
+  use_cache: false
+  
+  # 构建后是否自动启动
+  auto_start: true
+  
+  # 启动等待时间（秒）
+  startup_wait: 15
+
+# 通知设置
+notifications:
+  # 是否显示详细信息
+  verbose: true
+  
+  # 是否显示Docker存储信息
+  show_storage_info: true 

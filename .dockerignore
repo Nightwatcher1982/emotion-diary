@@ -1,0 +1,93 @@
+# Git相关
+.git
+.gitignore
+
+# macOS系统文件
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+
+# 缓存和临时文件
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git
+.mypy_cache
+.pytest_cache
+.hypothesis
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 开发工具
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 环境文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+docker.env
+
+# 数据库文件（不应该包含在镜像中）
+*.sqlite3
+*.db
+backend/db.sqlite3
+
+# 日志文件
+logs/
+*.log
+
+# 构建输出
+dist/
+build/
+*.egg-info/
+
+# 备份文件
+*.bak
+*.backup
+*.tar.gz
+
+# 测试文件
+test_*.sh
+*_test.sh
+
+# 部署相关
+deploy.log
+*.pid
+deploy.py
+deploy.config.yml
+
+# Docker相关
+docker-compose.override.yml
+Makefile.docker
+
+# 文档和报告
+*.md
+docs/
+
+# 脚本文件
+scripts/
+cleanup-old-scripts.sh 
