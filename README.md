@@ -1,308 +1,240 @@
-# 心晴日记 - AI情绪记录应用
+# 🌟 AI情绪日记应用 v1.0.0
 
-一款基于AI技术的轻量化情绪管理工具，帮助用户记录、分析和管理情绪状态。
+> 基于AI的智能情绪记录与分析应用，帮助用户更好地了解和管理自己的情绪状态。
 
-## 项目概述
+[![版本](https://img.shields.io/badge/版本-v1.0.0-blue.svg)](https://github.com/Nightwatcher1982/emotion-diary/releases/tag/v1.0.0)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/docker-支持-blue.svg)](docker-compose.yml)
 
-- **目标用户**: 18-35岁大学生/职场新人
-- **核心功能**: 情绪记录 + AI分析的闭环
-- **开发周期**: 8周MVP
-- **技术栈**: Uniapp + Vue3 + Django + 百度千帆ERNIE-Bot
+## 📱 应用截图
 
-## 技术架构
+| 首页 | 记录 | 分析 | 统计 | 个人中心 |
+|------|------|------|------|----------|
+| ![首页](img/首页.png) | ![记录](img/记录.png) | ![分析](img/分析.png) | ![统计](img/统计.png) | ![我的](img/我的.png) |
 
-### 前端
-- **框架**: Uniapp + Vue3 + TypeScript
-- **构建工具**: Vite
-- **UI组件**: 原生Uniapp组件
-- **状态管理**: Vue3 Composition API
+## ✨ 核心功能
 
-### 后端
-- **框架**: Django + Django REST Framework
-- **数据库**: MySQL + MongoDB
-- **AI服务**: 百度千帆ERNIE-Bot
-- **部署**: 云服务器
+### 🎯 用户认证
+- **手机验证码登录** - 快速安全的手机号验证
+- **微信小程序登录** - 一键授权登录
+- **用户资料管理** - 个性化设置和隐私控制
 
-## 项目结构
+### 📝 情绪记录
+- **智能情绪识别** - 支持多种情绪类型和强度
+- **快速记录模式** - 简化操作，一键记录
+- **富文本编辑** - 支持详细的情绪描述
+- **标签分类** - 灵活的情绪标签系统
 
-```
-├── frontend/                 # 前端项目
-│   ├── src/
-│   │   ├── pages/           # 页面文件
-│   │   │   ├── index/       # 首页
-│   │   │   ├── record/      # 情绪记录页
-│   │   │   ├── analysis/    # AI分析页
-│   │   │   ├── statistics/  # 统计页面
-│   │   │   └── profile/     # 个人中心
-│   │   ├── components/      # 公共组件
-│   │   │   └── SimpleChart.vue  # 图表组件
-│   │   ├── utils/           # 工具函数
-│   │   │   └── api.ts       # API接口
-│   │   ├── App.vue          # 根组件
-│   │   ├── main.js          # 入口文件
-│   │   ├── pages.json       # 页面配置
-│   │   └── manifest.json    # 应用配置
-│   ├── package.json         # 依赖配置
-│   ├── vite.config.ts       # Vite配置
-│   └── index.html           # HTML模板
-├── backend/                 # 后端项目
-│   ├── emotion_diary_api/   # Django项目配置
-│   ├── accounts/            # 用户认证模块
-│   ├── emotions/            # 情绪记录模块
-│   ├── ai_analysis/         # AI分析模块
-│   ├── manage.py            # Django管理脚本
-│   └── requirements.txt     # Python依赖
-├── docs/                    # 项目文档
-│   ├── reports/             # 开发报告
-│   │   ├── 图表显示问题最终修复报告.md
-│   │   ├── 统计页面图表集成完成报告.md
-│   │   ├── AI分析页面完善总结报告.md
-│   │   ├── 情绪记录页面完善总结报告.md
-│   │   └── 前后端联调成功报告.md
-│   ├── guides/              # 使用指南
-│   │   ├── 服务启动脚本使用指南.md
-│   │   ├── 千帆AI服务接入指南.md
-│   │   ├── 情绪记录页面功能说明.md
-│   │   └── AI分析页面功能说明.md
-│   ├── tests/               # 测试脚本
-│   │   ├── test_statistics_charts.sh
-│   │   ├── test_ai_analysis.sh
-│   │   ├── test_integration.sh
-│   │   └── test_ai_realtime.sh
-│   ├── next_steps_plan.md   # 下一步计划
-│   ├── AI情绪日记APP MVP需求说明书.md
-│   ├── AI情绪日记APP产品设计方案.md
-│   ├── AI情绪日记APP Figma文件搭建指南.md
-│   ├── 《AI 情绪日记 APP 全流程设计与交互解析》.md
-│   └── 《个人开发者 AI 情绪日记 APP 开发计划》.md
-├── scripts/                 # 脚本文件
-│   ├── start_services.sh    # Linux/macOS启动脚本
-│   ├── start_services.bat   # Windows启动脚本
-│   ├── dev                  # 快捷命令脚本
-│   └── verify_qianfan_config.py  # 千帆配置验证
-├── logs/                    # 日志文件目录
-│   ├── backend.log          # 后端日志
-│   ├── frontend.log         # 前端日志
-│   └── services.log         # 脚本日志
-├── dev                      # 快捷启动命令
-├── *.pid                    # 进程ID文件
-└── README.md               # 项目说明
+### 🤖 AI分析
+- **智能情绪分析** - 基于百度千帆大模型的深度分析
+- **个性化建议** - 针对性的情绪管理建议
+- **趋势预测** - 基于历史数据的情绪趋势分析
+- **测试模式** - 开发环境下的模拟分析功能
+
+### 📊 数据统计
+- **可视化图表** - 直观的情绪数据展示
+- **多维度分析** - 时间、类型、强度等多角度统计
+- **历史回顾** - 完整的情绪历史记录
+- **数据导出** - 支持数据备份和导出
+
+## 🚀 快速开始
+
+### 🖥️ 服务器部署（推荐）
+
+**一键部署脚本**：
+```bash
+# 下载并运行部署脚本
+curl -fsSL https://raw.githubusercontent.com/Nightwatcher1982/emotion-diary/main/scripts/server-deploy.sh | bash
 ```
 
-## 功能模块
+**手动部署**：
+```bash
+# 1. 克隆项目
+git clone https://github.com/Nightwatcher1982/emotion-diary.git
+cd emotion-diary
 
-### 已完成的前端页面
+# 2. 切换到稳定版本
+git checkout v1.0.0
 
-1. **首页 (index)**
-   - 欢迎界面
-   - 今日情绪概览
-   - 快捷记录入口
-   - 数据统计展示
+# 3. 配置环境变量
+cp docker.env .env
+nano .env  # 编辑配置
 
-2. **情绪记录页 (record)**
-   - 分步式记录流程
-   - 文本输入（支持语音）
-   - 情绪标签选择（6种基础情绪）
-   - 场景标签选择
-   - 情绪强度调节
-   - 深度分析开关
+# 4. 启动服务
+docker-compose up -d
 
-3. **AI分析页 (analysis)**
-   - 情绪分析结果
-   - AI洞察和建议
-   - 个性化建议（即时缓解、长期改善等）
-   - 情绪趋势图表
-   - 深度分析报告
-   - 行动计划制定
+# 5. 查看状态
+docker-compose ps
+```
 
-4. **统计页面 (statistics)**
-   - 时间范围选择
-   - 情绪趋势图表
-   - 情绪分布饼图
-   - 场景分析
-   - 时间模式分析
-   - 情绪词云
-   - 成就系统
-   - 数据导出功能
+**访问地址**：
+- 应用首页：http://your-server-ip/
+- 健康检查：http://your-server-ip/health/
+- API接口：http://your-server-ip/api/v1/
 
-5. **个人中心 (profile)**
-   - 用户信息管理
-   - 数据概览
-   - 设置选项（主题、提醒、隐私等）
-   - AI功能配置
-   - 数据管理（导出、备份、导入）
-   - 帮助与支持
-
-## 快速开始
-
-### 🚀 一键启动（推荐）
-
-使用我们提供的服务管理脚本，可以一键启动前后端服务：
+### 💻 本地开发
 
 ```bash
-# Linux/macOS - 首次使用需要添加执行权限
-chmod +x scripts/start_services.sh
+# 1. 克隆项目
+git clone https://github.com/Nightwatcher1982/emotion-diary.git
+cd emotion-diary
 
-# 启动所有服务
-./scripts/start_services.sh start
-# 或使用快捷命令
-./dev start
+# 2. 后端设置
+cd backend
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
 
-# Windows
-scripts/start_services.bat start
-```
-
-### 📊 服务管理
-
-```bash
-# 查看服务状态
-./dev status
-
-# 重启服务
-./dev restart
-
-# 停止服务  
-./dev stop
-
-# 查看日志
-./dev logs backend
-./dev logs frontend
-
-# 显示帮助
-./dev help
-```
-
-### 📱 访问应用
-
-启动服务后，可通过以下地址访问：
-- **前端应用**: http://localhost:5173
-- **后端API**: http://127.0.0.1:8000
-- **测试账号**: `testuser` / `testpass123`
-
-### 🔧 传统启动方式
-
-如果需要单独启动服务：
-
-#### 前端开发
-
-1. 安装依赖
-```bash
+# 3. 前端设置
 cd frontend
 npm install
-```
-
-2. 启动开发服务器
-```bash
 npm run dev:h5
 ```
 
-#### 后端开发
+## 🔧 技术架构
 
-1. 进入后端目录
+### 前端技术栈
+- **uni-app** - 跨平台开发框架
+- **Vue 3** - 渐进式JavaScript框架
+- **TypeScript** - 类型安全的JavaScript
+- **uni-ui** - 统一的UI组件库
+
+### 后端技术栈
+- **Django** - Python Web框架
+- **Django REST Framework** - RESTful API框架
+- **SQLite/PostgreSQL** - 数据库支持
+- **Redis** - 缓存和会话存储
+
+### AI服务
+- **百度千帆大模型** - 智能情绪分析
+- **自然语言处理** - 文本情感识别
+- **机器学习** - 个性化推荐算法
+
+### 部署架构
+- **Docker** - 容器化部署
+- **nginx** - 反向代理和静态文件服务
+- **Docker Compose** - 多容器编排
+- **GitHub Actions** - CI/CD自动化
+
+## 📋 环境配置
+
+### 必需配置
 ```bash
-cd backend
+# Django基础配置
+SECRET_KEY=your-secret-key
+DEBUG=False
+ALLOWED_HOSTS=your-domain.com,your-ip
+
+# 数据库配置
+DATABASE_URL=sqlite:///app/backend/db.sqlite3
 ```
 
-2. 激活虚拟环境（如果有）
+### 可选配置
 ```bash
-source emotion_diary_env/bin/activate  # Linux/macOS
-# 或
-emotion_diary_env\Scripts\activate     # Windows
+# 千帆AI配置（启用AI分析功能）
+QIANFAN_API_KEY=your-qianfan-api-key
+
+# 微信小程序配置（启用微信登录）
+WECHAT_APPID=your-wechat-appid
+WECHAT_SECRET=your-wechat-secret
+
+# 短信服务配置（启用短信验证）
+SMS_ACCESS_KEY_ID=your-sms-access-key
+SMS_ACCESS_KEY_SECRET=your-sms-secret
 ```
 
-3. 启动Django服务
+## 📊 系统要求
+
+### 服务器要求
+- **操作系统**: Ubuntu 18.04+ / Debian 10+ / CentOS 7+
+- **内存**: 最低1GB，推荐2GB+
+- **存储**: 最低5GB可用空间
+- **网络**: 稳定的互联网连接
+
+### 开发环境
+- **Node.js**: 16.0+
+- **Python**: 3.8+
+- **Docker**: 20.0+
+- **Docker Compose**: 2.0+
+
+## 🔒 安全特性
+
+- **数据加密** - 敏感数据加密存储
+- **API限流** - 防止接口滥用
+- **CSRF保护** - 跨站请求伪造防护
+- **输入验证** - 严格的数据验证
+- **安全头** - 完整的HTTP安全头配置
+
+## 📈 性能优化
+
+- **静态文件CDN** - 前端资源加速
+- **数据库索引** - 查询性能优化
+- **缓存策略** - Redis缓存加速
+- **图片压缩** - 自动图片优化
+- **代码分割** - 按需加载减少包体积
+
+## 🧪 测试功能
+
+### 开发环境特性
+- **模拟登录** - 无需真实手机号验证
+- **AI测试模式** - 模拟AI分析结果
+- **详细日志** - 完整的调试信息
+- **热重载** - 代码修改实时生效
+
+### 测试脚本
 ```bash
-python manage.py runserver
+# API功能测试
+./scripts/test_api.sh
+
+# 前端功能测试
+./scripts/test_frontend.sh
+
+# 完整集成测试
+./scripts/test_integration.sh
 ```
 
-### 构建命令
+## 📚 文档
 
-```bash
-# H5版本开发
-npm run dev:h5
+- [📖 部署指南](docs/服务器Docker部署指南.md)
+- [🔧 开发指南](docs/开发环境搭建指南.md)
+- [📋 API文档](docs/API接口文档.md)
+- [🎨 UI设计规范](docs/UI设计规范.md)
+- [🚀 版本更新日志](CHANGELOG.md)
 
-# 微信小程序开发
-npm run dev:mp-weixin
+## 🤝 贡献指南
 
-# H5版本构建
-npm run build:h5
+欢迎贡献代码！请阅读 [贡献指南](CONTRIBUTING.md) 了解详细信息。
 
-# 微信小程序构建
-npm run build:mp-weixin
-```
-
-## 设计特色
-
-### UI/UX设计
-- **现代化界面**: 采用渐变色彩和圆角设计
-- **响应式布局**: 适配不同屏幕尺寸
-- **交互动画**: 流畅的过渡效果和微交互
-- **无障碍设计**: 考虑视觉和操作便利性
-
-### 功能特色
-- **分步式记录**: 降低用户记录门槛
-- **智能分析**: AI驱动的情绪洞察
-- **可视化展示**: 丰富的图表和统计
-- **个性化建议**: 针对性的改善方案
-- **成就系统**: 激励用户持续使用
-
-## 开发状态
-
-### ✅ 已完成
-- [x] 前端项目搭建
-- [x] 页面结构设计
-- [x] 所有主要页面开发
-- [x] 响应式布局
-- [x] 基础交互功能
-- [x] 开发服务器配置
-- [x] 后端API开发
-- [x] 数据库设计
-- [x] AI服务集成（百度千帆）
-- [x] 用户认证系统
-- [x] 情绪记录功能
-- [x] 统计分析功能
-- [x] 图表可视化
-- [x] 前后端联调
-- [x] 服务管理脚本
-- [x] 测试用例
-
-### 🚧 进行中
-- [ ] 个人中心功能完善
-- [ ] AI分析页面优化
-- [ ] 智能提醒系统
-
-### 📋 待开发
-- [ ] 实时同步
-- [ ] 消息推送
-- [ ] 性能优化
-- [ ] 部署配置
-- [ ] 移动端适配
-- [ ] 小程序版本
-
-## 技术特点
-
-1. **跨平台兼容**: 支持H5、微信小程序等多平台
-2. **组件化开发**: 模块化的页面和组件结构
-3. **TypeScript支持**: 类型安全的开发体验
-4. **现代化构建**: 基于Vite的快速构建
-5. **响应式设计**: 适配移动端和桌面端
-
-## 贡献指南
-
+### 开发流程
 1. Fork 项目
-2. 创建功能分支
-3. 提交更改
-4. 推送到分支
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 创建 Pull Request
 
-## 许可证
+## 📄 许可证
 
-MIT License
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
 
-## 联系方式
+## 🙏 致谢
 
-如有问题或建议，请提交Issue或联系开发团队。
+- [uni-app](https://uniapp.dcloud.io/) - 跨平台开发框架
+- [Django](https://www.djangoproject.com/) - Web开发框架
+- [百度千帆](https://cloud.baidu.com/product/wenxinworkshop) - AI大模型服务
+- [Docker](https://www.docker.com/) - 容器化平台
+
+## 📞 联系方式
+
+- **GitHub Issues**: [提交问题](https://github.com/Nightwatcher1982/emotion-diary/issues)
+- **项目主页**: https://github.com/Nightwatcher1982/emotion-diary
+- **作者**: Nightwatcher1982
 
 ---
 
-**注意**: 这是一个MVP版本，主要用于验证"用户是否愿意用AI记录情绪"的核心假设。 
+<div align="center">
+
+**⭐ 如果这个项目对你有帮助，请给它一个星标！**
+
+Made with ❤️ by [Nightwatcher1982](https://github.com/Nightwatcher1982)
+
+</div> 
